@@ -1,0 +1,24 @@
+{
+  "name": "@sagentong/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@sagentong/db": "workspace:*",
+    "@sagentong/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@sagentong/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

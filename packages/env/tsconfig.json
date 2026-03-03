@@ -1,0 +1,3 @@
+{
+  "extends": "@sagentong/config/tsconfig.base.json"
+}
