@@ -2,7 +2,7 @@ name: sagentong
 
 services:
   postgres:
-    image: postgres
+    image: postgres:17-alpine
     container_name: sagentong-postgres
     environment:
       POSTGRES_DB: sagentong
