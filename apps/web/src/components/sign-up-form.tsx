@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
+import { ArrowLeft } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 
@@ -10,9 +11,22 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
+type SignUpFormProps = {
+  onSwitchToSignIn: () => void;
+  role?: "perangkat_desa" | "relawan" | null;
+  onBack?: () => void;
+};
+
+export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFormProps) {
   const router = useRouter();
   const { isPending } = authClient.useSession();
+
+  const titleText =
+    role === "perangkat_desa"
+      ? "Daftar Perangkat Desa"
+      : role === "relawan"
+        ? "Daftar Relawan"
+        : "Daftar Akun";
 
   const form = useForm({
     defaultValues: {
@@ -21,6 +35,7 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
       name: "",
     },
     onSubmit: async ({ value }) => {
+      // Typically you would pass 'role' as well if backend supports it
       await authClient.signUp.email(
         {
           email: value.email,
@@ -48,12 +63,29 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
   });
 
   if (isPending) {
-    return <Loader />;
+    return (
+      <div className="p-10 flex justify-center min-h-[500px] items-center">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
+    <div className="p-8 sm:p-10 min-h-[500px] flex flex-col justify-center relative">
+      <div className="mb-6 flex flex-col">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="text-gray-400 hover:text-[#2c869a] transition mb-4 self-start flex items-center gap-1 text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" /> Kembali
+          </button>
+        )}
+        <h1 className="text-[28px] font-bold text-[#0f374c] leading-tight mb-2">{titleText}</h1>
+        <p className="text-gray-500 font-light text-[15px]">
+          Lengkapi data di bawah ini untuk menjadi bagian dari SaGentong.
+        </p>
+      </div>
 
       <form
         onSubmit={(e) => {
@@ -61,22 +93,26 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="space-y-4"
+        className="space-y-4 pt-2"
       >
         <div>
           <form.Field name="name">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
+                  Nama Lengkap
+                </Label>
                 <Input
                   id={field.name}
                   name={field.name}
+                  placeholder="John Doe"
+                  className="rounded-xl border-gray-200 focus-visible:ring-[#2c869a] py-[22px]"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p key={error?.message} className="text-red-500 text-xs">
                     {error?.message}
                   </p>
                 ))}
@@ -88,18 +124,22 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
         <div>
           <form.Field name="email">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
+                  Email
+                </Label>
                 <Input
                   id={field.name}
                   name={field.name}
                   type="email"
+                  placeholder="admin@sagentong.id"
+                  className="rounded-xl border-gray-200 focus-visible:ring-[#2c869a] py-[22px]"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p key={error?.message} className="text-red-500 text-xs">
                     {error?.message}
                   </p>
                 ))}
@@ -111,18 +151,22 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
         <div>
           <form.Field name="password">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
+                  Password
+                </Label>
                 <Input
                   id={field.name}
                   name={field.name}
                   type="password"
+                  placeholder="********"
+                  className="rounded-xl border-gray-200 focus-visible:ring-[#2c869a] py-[22px]"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p key={error?.message} className="text-red-500 text-xs">
                     {error?.message}
                   </p>
                 ))}
@@ -131,27 +175,29 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
           </form.Field>
         </div>
 
-        <form.Subscribe>
-          {(state) => (
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={!state.canSubmit || state.isSubmitting}
-            >
-              {state.isSubmitting ? "Submitting..." : "Sign Up"}
-            </Button>
-          )}
-        </form.Subscribe>
+        <div className="pt-4">
+          <form.Subscribe>
+            {(state) => (
+              <Button
+                type="submit"
+                className="w-full py-6 rounded-xl bg-[#2c869a] hover:bg-[#1f5f6e] text-white font-semibold text-lg transition-all shadow-md"
+                disabled={!state.canSubmit || state.isSubmitting}
+              >
+                {state.isSubmitting ? "Sedang memproses..." : "Daftar Sekarang"}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
       </form>
 
-      <div className="mt-4 text-center">
-        <Button
-          variant="link"
+      <div className="mt-8 text-center font-medium text-[15px]">
+        <span className="text-gray-500">Sudah punya akun? </span>
+        <button
           onClick={onSwitchToSignIn}
-          className="text-indigo-600 hover:text-indigo-800"
+          className="text-[#2c869a] hover:text-[#1f5f6e] hover:underline transition"
         >
-          Already have an account? Sign In
-        </Button>
+          Masuk Sekarang
+        </button>
       </div>
     </div>
   );
