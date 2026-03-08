@@ -33,6 +33,8 @@ CREATE TABLE "user" (
 	"email_verified" boolean DEFAULT false NOT NULL,
 	"image" text,
 	"role" text NOT NULL,
+	"phone_number" text,
+	"disaster_notification_consent" boolean DEFAULT false NOT NULL,
 	"verified" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,

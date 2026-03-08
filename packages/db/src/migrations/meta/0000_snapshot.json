@@ -1,5 +1,5 @@
 {
-  "id": "b34bc043-7ffa-4350-ba38-ae38071c67ec",
+  "id": "63a892f5-f58c-4ff2-b971-e6fd9fc2b374",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -256,6 +256,19 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disaster_notification_consent": {
+          "name": "disaster_notification_consent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "verified": {
           "name": "verified",

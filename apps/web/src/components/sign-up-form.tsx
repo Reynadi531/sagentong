@@ -7,6 +7,7 @@ import { ArrowLeft, Mail, RefreshCw } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 
+import { Checkbox } from "./ui/checkbox";
 import Loader from "./loader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -38,6 +39,8 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
       password: "",
       confirmPassword: "",
       name: "",
+      phoneNumber: "",
+      disasterNotificationConsent: false,
     },
     onSubmit: async ({ value }) => {
       await authClient.signUp.email(
@@ -46,6 +49,9 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
           password: value.password,
           name: value.name,
           role: role ?? "relawan",
+          phoneNumber: role === "relawan" ? value.phoneNumber : undefined,
+          disasterNotificationConsent:
+            role === "relawan" ? value.disasterNotificationConsent : false,
           callbackURL: "/verify-email",
         },
         {
@@ -74,11 +80,39 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
           email: z.email("Invalid email address"),
           password: z.string().min(8, "Password must be at least 8 characters"),
           confirmPassword: z.string().min(1, "Please confirm your password"),
+          phoneNumber: z.string(),
+          disasterNotificationConsent: z.boolean(),
         })
         .refine((data) => data.password === data.confirmPassword, {
           message: "Passwords do not match",
           path: ["confirmPassword"],
-        }),
+        })
+        .refine(
+          (data) => {
+            // Phone number is required only for relawan
+            if (role === "relawan") {
+              return data.phoneNumber.trim().length >= 10;
+            }
+            return true;
+          },
+          {
+            message: "Nomor telepon harus minimal 10 digit",
+            path: ["phoneNumber"],
+          },
+        )
+        .refine(
+          (data) => {
+            // Consent is required only for relawan
+            if (role === "relawan") {
+              return data.disasterNotificationConsent === true;
+            }
+            return true;
+          },
+          {
+            message: "Anda harus menyetujui untuk menerima notifikasi kebencanaan",
+            path: ["disasterNotificationConsent"],
+          },
+        ),
     },
   });
 
@@ -296,6 +330,66 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
             )}
           </form.Field>
         </div>
+
+        {role === "relawan" && (
+          <>
+            <div>
+              <form.Field name="phoneNumber">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
+                      Nomor Telepon
+                    </Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="tel"
+                      placeholder="08xxxxxxxxxx"
+                      className="rounded-xl border-gray-200 focus-visible:ring-[#2c869a] py-[22px]"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {field.state.meta.errors.map((error) => (
+                      <p key={error?.message} className="text-red-500 text-xs">
+                        {error?.message}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </form.Field>
+            </div>
+
+            <div>
+              <form.Field name="disasterNotificationConsent">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <div className="flex items-start gap-3 rounded-xl border border-gray-200 p-4 bg-[#f0f9fb]/50">
+                      <Checkbox
+                        id={field.name}
+                        checked={field.state.value}
+                        onCheckedChange={(checked) => field.handleChange(checked)}
+                        className="mt-0.5 rounded-md border-[#2c869a]/40 data-checked:bg-[#2c869a] data-checked:border-[#2c869a]"
+                      />
+                      <Label
+                        htmlFor={field.name}
+                        className="text-[#0f374c] font-normal text-[13.5px] leading-relaxed cursor-pointer select-none"
+                      >
+                        Saya bersedia dihubungi dan menerima notifikasi apabila terjadi event
+                        kebencanaan
+                      </Label>
+                    </div>
+                    {field.state.meta.errors.map((error) => (
+                      <p key={error?.message} className="text-red-500 text-xs">
+                        {error?.message}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </form.Field>
+            </div>
+          </>
+        )}
 
         <div className="pt-4">
           <form.Subscribe>
