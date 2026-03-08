@@ -14,48 +14,58 @@ import {
   Youtube,
   Search,
 } from "lucide-react";
-import Image from "next/image";
+import { FaTiktok } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import Header from "@/components/header";
 
 export default function LandingFigma() {
+  const router = useRouter();
   return (
-    <div className="w-full bg-white']">
+    <div className="w-full bg-white">
+      <Header />
       {/* BERANDA (Hero) Section */}
       <section
         id="beranda"
         className="relative min-h-[calc(100vh-63px)] w-full overflow-hidden flex items-center"
       >
         {/* Background color placeholder/image */}
-        <div className="absolute inset-0 w-full h-full bg-[#0a2636]">
+        <div className="absolute inset-0 w-full h-full">
           {/* Note: In production you would use next/image pointing to public/images/hero_section.svg or similar */}
           <div
-            className="absolute inset-0 w-full h-full opacity-60 mix-blend-overlay bg-cover bg-center"
+            className="absolute inset-0 w-full h-full bg-cover bg-center"
             style={{ backgroundImage: "url('/images/hero_section.svg')" }}
           />
           <div
             className="absolute inset-0 w-full h-full"
             style={{
               backgroundImage:
-                "linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.1) 100%)",
+                "linear-gradient(-90deg, rgba(102, 102, 102, 0) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.75) 100%)",
             }}
           />
         </div>
 
         {/* Content */}
         <div className="relative h-full flex flex-col justify-center items-start px-6 md:px-12 lg:px-[100px] py-20 w-full max-w-[1336px] mx-auto z-10">
-          <h1 className="text-4xl md:text-5xl lg:text-[64px] font-bold text-white mb-[20px] leading-[1.2] drop-shadow-md">
+          <h1 className="text-[32px] md:text-[40px] lg:text-[56px] font-bold text-white mb-[20px] leading-[1.2] drop-shadow-[0px_4px_12px_rgba(0,0,0,0.4)] capitalize">
             <div>Sistem bantuan darurat</div>
             <div>untuk korban banjir</div>
           </h1>
 
-          <p className="text-lg md:text-[22px] text-white mb-[45px] max-w-2xl drop-shadow-sm font-light">
-            Laporan, Verifikasi, dan Distribusi Bantuan Untuk Warga Dayeuhkolot
+          <p className="text-lg md:text-[20px] text-white mb-[45px] max-w-2xl drop-shadow-[0px_4px_12px_rgba(0,0,0,0.25)] font-normal leading-[30px]">
+            Laporan, verifikasi, dan Distribusi Bantuan Untuk Warga Dayeuhkolot
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5">
-            <button className="bg-[#2c869a] hover:bg-[#1f5f6e] text-white px-8 py-4 rounded-lg font-semibold transition duration-300 whitespace-nowrap text-lg tracking-[0.5px]">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="bg-[#2c869a] hover:bg-[#1f5f6e] text-white px-8 h-[56px] flex items-center justify-center w-full sm:w-[180px] rounded-[17px] font-semibold transition duration-300 whitespace-nowrap text-[20px] leading-[30px] drop-shadow-[0px_4px_12px_rgba(0,0,0,0.25)]"
+            >
               Laporkan Banjir
             </button>
-            <button className="bg-[#7cc2d1] hover:bg-[#6ab5c5] text-white px-8 py-4 rounded-lg font-semibold transition duration-300 whitespace-nowrap text-lg tracking-[0.5px]">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="bg-[#7cc2d1] hover:bg-[#6ab5c5] text-white px-8 h-[56px] flex items-center justify-center w-full sm:w-[241px] rounded-[17px] font-semibold transition duration-300 whitespace-nowrap text-[20px] leading-[30px] drop-shadow-[0px_4px_12px_rgba(0,0,0,0.25)]"
+            >
               Gabung Jadi Relawan
             </button>
           </div>
@@ -348,8 +358,9 @@ export default function LandingFigma() {
             <div>
               <Youtube className="w-5 h-5" />
             </div>
-            {/* Tiktok placeholder */}
-            <div className="font-bold text-lg leading-none pt-1">TikTok</div>
+            <div>
+              <FaTiktok className="w-5 h-5" />
+            </div>
           </div>
 
           <div className="border-t border-white/20 pt-8">
