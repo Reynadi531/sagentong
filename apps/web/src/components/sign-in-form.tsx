@@ -80,8 +80,8 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
               <User className="w-5 h-5" />
             </div>
             <select className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-12 pr-10 text-[15px] text-gray-400 appearance-none focus:ring-2 focus:ring-[#2c869a] focus:border-transparent outline-none">
-              <option value="" disabled selected>
-                pilih role
+              <option selected disabled value="pilih_role">
+                Pilih Role
               </option>
               <option value="perangkat_desa">Perangkat Desa</option>
               <option value="relawan">Relawan</option>

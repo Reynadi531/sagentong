@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 type NavLink = {
   id: string;
@@ -10,6 +11,8 @@ type NavLink = {
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
 
   const links: NavLink[] = [
     { id: "beranda", label: "Beranda" },
@@ -74,13 +77,38 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Login Button */}
-          <Link
-            href="/login"
-            className="bg-[#2c869a] text-white px-8 h-[42px] flex items-center justify-center rounded-lg hover:bg-[#1f5f6e] transition font-semibold text-[16px]"
-          >
-            Login
-          </Link>
+          {/* Login / Dashboard Button */}
+          {session ? (
+            <div className="flex items-center gap-4">
+              <Link
+                href="/dashboard"
+                className="bg-[#2c869a] text-white px-8 h-[42px] flex items-center justify-center rounded-lg hover:bg-[#1f5f6e] transition font-semibold text-[16px]"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => {
+                  authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        router.push("/");
+                      },
+                    },
+                  });
+                }}
+                className="bg-red-500 text-white px-8 h-[42px] flex items-center justify-center rounded-lg hover:bg-red-600 transition font-semibold text-[16px]"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="bg-[#2c869a] text-white px-8 h-[42px] flex items-center justify-center rounded-lg hover:bg-[#1f5f6e] transition font-semibold text-[16px]"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </header>
