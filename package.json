@@ -28,6 +28,11 @@
     "db:watch": "turbo -F @sagentong/db db:watch",
     "db:stop": "turbo -F @sagentong/db db:stop",
     "db:down": "turbo -F @sagentong/db db:down",
+    "db:seed": "turbo -F @sagentong/db db:seed",
+    "storage:start": "turbo -F @sagentong/storage storage:start",
+    "storage:watch": "turbo -F @sagentong/storage storage:watch",
+    "storage:stop": "turbo -F @sagentong/storage storage:stop",
+    "storage:down": "turbo -F @sagentong/storage storage:down",
     "check": "oxlint && oxfmt --write"
   },
   "dependencies": {

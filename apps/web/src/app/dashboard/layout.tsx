@@ -2,7 +2,7 @@ import React from "react";
 import { auth } from "@sagentong/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import Sidebar from "@/components/dashboard/sidebar";
+import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Sidebar roles={session.user.role as any} session={session} />
 
       {/* Main Content Area - Takes up remaining space and scrolls */}
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto p-4 py-6">{children}</main>
     </div>
   );
 }

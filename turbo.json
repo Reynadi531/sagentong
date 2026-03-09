@@ -47,6 +47,20 @@
     },
     "db:down": {
       "cache": false
+    },
+    "storage:start": {
+      "cache": false,
+      "persistent": true
+    },
+    "storage:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "storage:stop": {
+      "cache": false
+    },
+    "storage:down": {
+      "cache": false
     }
   }
 }

@@ -12,6 +12,7 @@
     "@sagentong/auth": "workspace:*",
     "@sagentong/db": "workspace:*",
     "@sagentong/env": "workspace:*",
+    "@sagentong/storage": "workspace:*",
     "@tanstack/react-form": "^1.28.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "better-auth": "catalog:",

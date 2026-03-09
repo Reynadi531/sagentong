@@ -15,6 +15,13 @@
       "when": 1773060002989,
       "tag": "0001_tired_banshee",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773084317336,
+      "tag": "0002_open_blink",
+      "breakpoints": true
     }
   ]
 }
