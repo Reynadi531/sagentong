@@ -63,7 +63,7 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
               toast.success("Akun berhasil dibuat! Cek email Anda untuk verifikasi.");
             } else {
               // perangkat_desa goes to dashboard (then gets redirected to pending)
-              router.push("/dashboard");
+              router.push("/login");
               toast.success("Pendaftaran berhasil");
             }
           },

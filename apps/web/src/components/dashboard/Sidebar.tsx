@@ -1,11 +1,21 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, BarChart2, MousePointerClick, History, Settings, Menu } from "lucide-react";
+import {
+  Home,
+  BarChart2,
+  MousePointerClick,
+  History,
+  Settings,
+  Menu,
+  ShieldUser,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { auth } from "@sagentong/auth";
 
 const navItems = [
   {
@@ -28,16 +38,32 @@ const navItems = [
     href: "/dashboard/riwayat",
     icon: History,
   },
+  {
+    title: "Verifikasi Perangkat Desa",
+    href: "/dashboard/verifikasi",
+    icon: ShieldUser,
+  },
 ];
 
-const SidebarContent = () => {
+interface SidebarContentIProps {
+  roles: "superadmin" | "relawan" | "perangkat_desa";
+  session: Awaited<ReturnType<typeof auth.api.getSession>>;
+}
+
+const exludedNavItemsForRoles: Record<"superadmin" | "relawan" | "perangkat_desa", string[]> = {
+  superadmin: [],
+  relawan: ["/dashboard/verifikasi"],
+  perangkat_desa: ["/dashboard/verifikasi"],
+};
+
+const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   const pathname = usePathname();
 
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex items-center px-6 py-8">
+      <div className="flex w-full items-center px-6 py-8">
         <Image
-          src="/images/Logo_SaGentong.svg"
+          src="/assets/logos/logo_sagentong_horizontal.png"
           alt="SaGentong Logo"
           width={180}
           height={60}
@@ -48,6 +74,11 @@ const SidebarContent = () => {
 
       <nav className="flex-1 space-y-2 px-4">
         {navItems.map((item) => {
+          // Skip nav items based on user role
+          if (exludedNavItemsForRoles[roles].includes(item.href)) {
+            return null;
+          }
+
           const isActive = pathname === item.href;
           return (
             <Link
@@ -73,11 +104,24 @@ const SidebarContent = () => {
       <div className="mt-auto border-t border-gray-100 p-4">
         <div className="flex items-center gap-3">
           <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
-            <Image src="/images/hero_section.svg" alt="User Avatar" fill className="object-cover" />
+            <Image
+              src={session?.user.image || "/assets/logos/sagentong.svg"}
+              alt="User Avatar"
+              fill
+              className="object-cover"
+            />
           </div>
           <div className="flex flex-1 flex-col overflow-hidden">
-            <span className="truncate text-sm font-semibold text-gray-900">Ahmad Supriyadi</span>
-            <span className="truncate text-xs text-gray-500">Perangkat desa</span>
+            <span className="truncate text-sm font-semibold text-gray-900">
+              {session?.user.name}
+            </span>
+            <span className="truncate text-xs text-gray-500">
+              {session?.user.role === "perangkat_desa"
+                ? "Perangkat Desa"
+                : session?.user.role === "relawan"
+                  ? "Relawan"
+                  : "Super Admin"}
+            </span>
           </div>
           <button className="shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Settings className="size-6 text-[#247D8B]" strokeWidth={2.5} />
@@ -88,7 +132,7 @@ const SidebarContent = () => {
   );
 };
 
-export const MobileSidebar = () => {
+export const MobileSidebar: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   return (
     <Sheet>
       <SheetTrigger render={<Button variant="outline" size="icon" className="md:hidden" />}>
@@ -97,18 +141,18 @@ export const MobileSidebar = () => {
       </SheetTrigger>
       <SheetContent side="left" className="w-[280px] p-0 border-r-0">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-        <SidebarContent />
+        <SidebarContent roles={roles} session={session} />
       </SheetContent>
     </Sheet>
   );
 };
 
-const Sidebar = () => {
+const Sidebar: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   return (
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden min-h-screen w-[278px] shrink-0 border-r bg-white drop-shadow-sm md:block">
-        <SidebarContent />
+        <SidebarContent roles={roles} session={session} />
       </aside>
     </>
   );
