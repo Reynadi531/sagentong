@@ -26,7 +26,7 @@ function ResetPasswordContent() {
   if (!token) {
     return (
       <div className="flex min-h-[calc(100vh-70px)] items-center justify-center p-4 bg-[#f4f7f6]">
-        <div className="w-full max-w-md bg-white rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-10 text-center">
+        <div className="w-full max-w-md bg-white rounded-2xl sm:rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-6 sm:p-10 text-center">
           <div className="w-20 h-20 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-8 ring-1 ring-red-200/60">
             <XCircle className="w-10 h-10 text-red-500" />
           </div>
@@ -81,7 +81,7 @@ function ResetPasswordContent() {
   if (isSuccess) {
     return (
       <div className="flex min-h-[calc(100vh-70px)] items-center justify-center p-4 bg-[#f4f7f6]">
-        <div className="w-full max-w-md bg-white rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-10 text-center animate-in fade-in zoom-in duration-300">
+        <div className="w-full max-w-md bg-white rounded-2xl sm:rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-6 sm:p-10 text-center animate-in fade-in zoom-in duration-300">
           <div className="w-20 h-20 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-8 ring-1 ring-emerald-200/60">
             <CheckCircle2 className="w-10 h-10 text-emerald-500" />
           </div>
@@ -103,9 +103,9 @@ function ResetPasswordContent() {
 
   return (
     <div className="flex min-h-[calc(100vh-70px)] items-center justify-center p-4 bg-[#f4f7f6]">
-      <div className="w-full max-w-md bg-white rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-10 animate-in fade-in zoom-in duration-300">
+      <div className="w-full max-w-md bg-white rounded-2xl sm:rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-6 sm:p-10 animate-in fade-in zoom-in duration-300">
         <div className="mb-8 text-center">
-          <h1 className="text-[28px] font-bold text-[#0f374c] mb-2 leading-tight">
+          <h1 className="text-xl sm:text-[28px] font-bold text-[#0f374c] mb-2 leading-tight">
             Atur Ulang Sandi
           </h1>
           <p className="text-gray-500 font-medium text-[15px]">Masukkan kata sandi baru Anda</p>

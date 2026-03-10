@@ -119,7 +119,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
 
   if (isPending) {
     return (
-      <div className="p-10 flex justify-center min-h-[500px] items-center">
+      <div className="p-6 sm:p-10 flex justify-center min-h-[500px] items-center">
         <Loader />
       </div>
     );
@@ -189,7 +189,9 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
             <ArrowLeft className="w-4 h-4" />
             Kembali ke Masuk
           </button>
-          <h1 className="text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">Lupa Sandi?</h1>
+          <h1 className="text-2xl sm:text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">
+            Lupa Sandi?
+          </h1>
           <p className="text-gray-500 font-medium text-[15px]">
             {resetEmailSent
               ? "Kami telah mengirimkan instruksi ke email Anda"
@@ -265,7 +267,9 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
   return (
     <div className="flex flex-col justify-center h-full w-full max-w-[400px] mx-auto">
       <div className="mb-8 text-center sm:text-left">
-        <h1 className="text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">Selamat Datang</h1>
+        <h1 className="text-2xl sm:text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">
+          Selamat Datang
+        </h1>
         <p className="text-gray-500 font-medium text-[15px]">
           Masuk Ke Akun Anda Untuk Melanjutkan
         </p>
@@ -353,7 +357,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
         </div>
 
         {/* Options Row */}
-        <div className="flex justify-between items-center py-2">
+        <div className="flex flex-wrap justify-between items-center gap-2 py-2">
           <form.Field name="rememberMe">
             {(field) => (
               <label className="flex items-center gap-2 cursor-pointer group">

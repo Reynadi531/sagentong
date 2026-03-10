@@ -17,11 +17,11 @@ interface LaporanLineChartProps {
 
 export default function LaporanLineChart({ data }: LaporanLineChartProps) {
   return (
-    <div className="h-[300px] w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-      <h3 className="mb-6 text-[17px] font-semibold text-[#0f374c]">
+    <div className="h-[260px] md:h-[300px] w-full rounded-2xl bg-white p-4 md:p-6 shadow-sm ring-1 ring-gray-100">
+      <h3 className="mb-4 md:mb-6 text-[15px] md:text-[17px] font-semibold text-[#0f374c]">
         Jumlah Laporan 7 Hari Terakhir
       </h3>
-      <div className="h-[210px] w-full">
+      <div className="h-[180px] md:h-[210px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />

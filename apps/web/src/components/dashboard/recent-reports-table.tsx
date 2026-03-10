@@ -32,8 +32,8 @@ const statusStyles: Record<ReportStatus, { bg: string; text: string; dot: string
 
 export default function RecentReportsTable({ reports }: { reports: Report[] }) {
   return (
-    <div className="w-full rounded-2xl bg-white p-6 shadow-[0px_4px_20px_rgba(44,134,154,0.05)] ring-1 ring-gray-100">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="w-full rounded-2xl bg-white p-4 md:p-6 shadow-[0px_4px_20px_rgba(44,134,154,0.05)] ring-1 ring-gray-100">
+      <div className="mb-4 md:mb-6 flex items-center justify-between">
         <h2 className="text-[17px] font-semibold text-[#0f374c]">Laporan Terbaru</h2>
       </div>
 
@@ -41,11 +41,11 @@ export default function RecentReportsTable({ reports }: { reports: Report[] }) {
         <table className="w-full text-left font-inter text-[14px]">
           <thead>
             <tr className="border-b border-gray-100 text-gray-500">
-              <th className="pb-4 pr-4 font-medium">Tanggal</th>
-              <th className="pb-4 px-4 font-medium">Lokasi (RW/RT)</th>
-              <th className="pb-4 px-4 font-medium">Jenis Bantuan</th>
-              <th className="pb-4 px-4 font-medium">Deskripsi</th>
-              <th className="pb-4 pl-4 font-medium text-center">Status</th>
+              <th className="pb-4 pr-4 font-medium whitespace-nowrap">Tanggal</th>
+              <th className="pb-4 px-4 font-medium whitespace-nowrap">Lokasi (RW/RT)</th>
+              <th className="pb-4 px-4 font-medium whitespace-nowrap">Jenis Bantuan</th>
+              <th className="pb-4 px-4 font-medium whitespace-nowrap">Deskripsi</th>
+              <th className="pb-4 pl-4 font-medium text-center whitespace-nowrap">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -58,7 +58,7 @@ export default function RecentReportsTable({ reports }: { reports: Report[] }) {
             ) : (
               reports.map((report) => (
                 <tr key={report.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-4 pr-4 text-gray-600">
+                  <td className="py-4 pr-4 text-gray-600 whitespace-nowrap">
                     {report.tanggal.toLocaleDateString("id-ID", {
                       day: "2-digit",
                       month: "short",

@@ -3,6 +3,7 @@ import { auth } from "@sagentong/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/dashboard/Sidebar";
+import DashboardMobileHeader from "@/components/dashboard/dashboard-header";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({
@@ -32,7 +33,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Sidebar roles={session.user.role as any} session={session} />
 
       {/* Main Content Area - Takes up remaining space and scrolls */}
-      <main className="flex-1 overflow-y-auto p-4 py-6">{children}</main>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Mobile Header with hamburger */}
+        <DashboardMobileHeader roles={session.user.role as any} session={session} />
+
+        <main className="flex-1 overflow-y-auto px-3 py-4 md:p-4 md:py-6">{children}</main>
+      </div>
     </div>
   );
 }

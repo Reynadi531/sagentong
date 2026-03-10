@@ -34,9 +34,14 @@ export default function StatistikInsightCard({
   const { icon: Icon, color, bg } = config[type];
 
   return (
-    <div className="flex h-[100px] w-full items-center gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-      <div className={cn("flex size-14 shrink-0 items-center justify-center rounded-2xl", bg)}>
-        <Icon className={cn("size-7", color)} />
+    <div className="flex min-h-[80px] md:h-[100px] w-full items-center gap-4 rounded-2xl bg-white p-4 md:p-5 shadow-sm ring-1 ring-gray-100">
+      <div
+        className={cn(
+          "flex size-10 md:size-14 shrink-0 items-center justify-center rounded-2xl",
+          bg,
+        )}
+      >
+        <Icon className={cn("size-5 md:size-7", color)} />
       </div>
       <div className="flex flex-col gap-1">
         <h4 className="text-[15px] font-bold text-[#0f374c]">{title}</h4>

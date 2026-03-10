@@ -23,13 +23,13 @@ export default function LoginPage() {
   return (
     <>
       <Header />
-      <div className="flex min-h-[calc(100vh-70px)] bg-[#f4f7f6]'] items-center justify-center p-4 sm:p-8">
+      <div className="flex min-h-[calc(100vh-70px)] bg-[#f4f7f6] items-center justify-center p-4 sm:p-8">
         {/* Centralized Card Container */}
         <div
-          className={`w-full max-w-[1100px] min-h-[650px] bg-white rounded-[32px] shadow-[0px_10px_40px_rgba(44,134,154,0.1)] flex flex-col overflow-hidden transition-all duration-500 ${mode === "signin" ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+          className={`w-full max-w-[1100px] min-h-0 lg:min-h-[650px] bg-white rounded-2xl lg:rounded-[32px] shadow-[0px_10px_40px_rgba(44,134,154,0.1)] flex flex-col overflow-hidden transition-all duration-500 ${mode === "signin" ? "lg:flex-row-reverse" : "lg:flex-row"}`}
         >
           {/* Form Side */}
-          <div className="w-full lg:w-[55%] flex flex-col justify-center items-center p-6 md:p-12 relative z-10 bg-white">
+          <div className="w-full lg:w-[55%] flex flex-col justify-center items-center p-4 sm:p-6 md:p-12 relative z-10 bg-white">
             <div className="w-full max-w-[450px]">
               {mode === "signin" && (
                 <SignInForm onSwitchToSignUp={() => setMode("role_selection")} />

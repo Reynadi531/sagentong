@@ -100,7 +100,7 @@ export default function BantuanDetailClient({
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-[1200px] mx-auto w-full px-4 pb-12">
+    <div className="flex flex-col gap-6 md:gap-8 max-w-[1200px] mx-auto w-full px-4 pb-12">
       {/* Header & Back Action */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex flex-col gap-4">
@@ -113,7 +113,9 @@ export default function BantuanDetailClient({
           </Link>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold text-[#0f374c]">Detail Bantuan Relawan</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0f374c]">
+              Detail Bantuan Relawan
+            </h1>
             <p className="text-gray-500">
               Berikut adalah rincian bantuan yang dikirimkan oleh relawan untuk laporan ini.
             </p>
@@ -135,8 +137,8 @@ export default function BantuanDetailClient({
       </div>
 
       {/* Report Summary Card */}
-      <div className="w-full rounded-2xl bg-[#2C869A] p-6 text-white shadow-lg overflow-hidden relative">
-        <div className="absolute right-0 top-0 p-8 opacity-10">
+      <div className="w-full rounded-2xl bg-[#2C869A] p-4 sm:p-6 text-white shadow-lg overflow-hidden relative">
+        <div className="absolute right-0 top-0 p-8 opacity-10 hidden sm:block">
           <Package className="size-32" />
         </div>
 
@@ -145,7 +147,7 @@ export default function BantuanDetailClient({
             <span className="text-white/70 text-xs font-bold uppercase tracking-wider">
               Laporan Utama
             </span>
-            <h2 className="text-2xl font-bold">{report.kebutuhan}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">{report.kebutuhan}</h2>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
               <div className="flex items-center gap-1.5 text-sm">
                 <User className="size-4 text-white/70" />
@@ -165,7 +167,7 @@ export default function BantuanDetailClient({
             <span className="text-white/70 text-xs font-bold uppercase tracking-wider">
               Total Dana
             </span>
-            <span className="text-2xl font-black">
+            <span className="text-xl sm:text-2xl font-black">
               {formatRupiah(bantuan.reduce((acc, curr) => acc + (curr.danaAmount ?? 0), 0))}
             </span>
             <span className="text-white/70 text-xs uppercase">{bantuan.length} Kontribusi</span>
@@ -190,7 +192,7 @@ export default function BantuanDetailClient({
                 className="flex flex-col bg-white rounded-3xl shadow-sm ring-1 ring-gray-100 overflow-hidden hover:shadow-md transition-all"
               >
                 {/* Item Header */}
-                <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                <div className="px-4 sm:px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
                   <div className="flex items-center gap-3">
                     <div className="size-10 rounded-full bg-[#2C869A]/10 flex items-center justify-center">
                       <User className="size-5 text-[#2C869A]" />
@@ -212,7 +214,7 @@ export default function BantuanDetailClient({
                   </div>
                 </div>
 
-                <div className="p-6 flex flex-col gap-6">
+                <div className="p-4 sm:p-6 flex flex-col gap-6">
                   {/* Item Description */}
                   <div className="flex flex-col gap-2">
                     <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
@@ -244,7 +246,7 @@ export default function BantuanDetailClient({
                             </button>
                           }
                         />
-                        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-transparent border-none">
+                        <DialogContent className="max-w-[95vw] sm:max-w-4xl p-0 overflow-hidden bg-transparent border-none">
                           <DialogTitle className="sr-only">Bukti Bantuan Relawan</DialogTitle>
                           <img
                             src={`/api/storage/${item.evidenceImage}`}

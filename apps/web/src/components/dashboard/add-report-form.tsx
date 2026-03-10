@@ -187,18 +187,18 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
   return (
     <div className="flex flex-col w-full max-w-[800px] mx-auto bg-white rounded-3xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-300">
       {/* Header */}
-      <div className="bg-[#2C869A] p-8 text-white relative">
+      <div className="bg-[#2C869A] p-4 md:p-8 text-white relative">
         {onClose && (
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
+            className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
           >
-            <X className="size-6" />
+            <X className="size-5 md:size-6" />
           </button>
         )}
-        <div className="flex flex-col gap-2 pt-4">
-          <h2 className="text-2xl font-bold">Tambah Laporan Kebutuhan Warga</h2>
-          <p className="text-white/80 text-sm">
+        <div className="flex flex-col gap-2 pt-2 md:pt-4">
+          <h2 className="text-xl md:text-2xl font-bold">Tambah Laporan Kebutuhan Warga</h2>
+          <p className="text-white/80 text-xs md:text-sm">
             Laporkan kondisi banjir dan kebutuhan bantuan untuk warga terdampak.
           </p>
         </div>
@@ -210,10 +210,10 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="p-8 flex flex-col gap-8 bg-[#F4F7F6]/30 overflow-y-auto max-h-[80vh]"
+        className="p-4 md:p-8 flex flex-col gap-5 md:gap-8 bg-[#F4F7F6]/30 overflow-y-auto max-h-[80vh]"
       >
         {/* Section 1: Informasi Lokasi */}
-        <section className="flex flex-col gap-6 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <section className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
           <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
             <div className="p-2 bg-[#2C869A]/10 rounded-lg">
               <MapPin className="size-5 text-[#2C869A]" />
@@ -371,7 +371,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
         </section>
 
         {/* Section 2: Informasi Kondisi */}
-        <section className="flex flex-col gap-6 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <section className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
           <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
             <div className="p-2 bg-[#FFA918]/10 rounded-lg">
               <AlertTriangle className="size-5 text-[#FFA918]" />
@@ -480,7 +480,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
         </section>
 
         {/* Section 3: Jenis Kebutuhan Bantuan */}
-        <section className="flex flex-col gap-6 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <section className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
           <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
             <div className="p-2 bg-[#2C9A3D]/10 rounded-lg">
               <Package className="size-5 text-[#2C9A3D]" />
@@ -580,7 +580,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
         </section>
 
         {/* Section 4: Upload Evidence */}
-        <section className="flex flex-col gap-6 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <section className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
           <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
             <div className="p-2 bg-[#2C869A]/10 rounded-lg">
               <Upload className="size-5 text-[#2C869A]" />
@@ -633,7 +633,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
               onDrop={handleDrop}
               onClick={() => !isUploading && fileInputRef.current?.click()}
               className={cn(
-                "flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-3xl transition-all cursor-pointer group",
+                "flex flex-col items-center justify-center p-5 md:p-8 border-2 border-dashed rounded-3xl transition-all cursor-pointer group",
                 isDragOver
                   ? "border-[#2C869A] bg-[#2C869A]/5"
                   : "border-gray-200 bg-[#F9FAFB] hover:border-[#2C869A]/50",
@@ -679,7 +679,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                 type="submit"
                 disabled={!canSubmit || isSubmitting || isUploading}
                 className={cn(
-                  "flex items-center gap-2 px-12 py-4 bg-[#2C869A] hover:bg-[#236e7f] text-white font-bold rounded-2xl shadow-xl shadow-[#2C869A]/20 transition-all transform hover:-translate-y-1 active:scale-95",
+                  "flex items-center gap-2 px-6 md:px-12 py-3 md:py-4 bg-[#2C869A] hover:bg-[#236e7f] text-white font-bold rounded-2xl shadow-xl shadow-[#2C869A]/20 transition-all transform hover:-translate-y-1 active:scale-95 text-sm md:text-base",
                   (!canSubmit || isSubmitting || isUploading) &&
                     "opacity-60 cursor-not-allowed hover:translate-y-0 active:scale-100",
                 )}

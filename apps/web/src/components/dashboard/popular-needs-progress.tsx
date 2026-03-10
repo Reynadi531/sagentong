@@ -12,8 +12,10 @@ export default function PopularNeedsProgress({ needs }: { needs: NeedCategory[] 
   const sortedNeeds = [...needs].sort((a, b) => b.percentage - a.percentage);
 
   return (
-    <div className="w-full rounded-2xl bg-white p-6 shadow-[0px_4px_20px_rgba(44,134,154,0.05)] ring-1 ring-gray-100 flex flex-col h-full">
-      <h2 className="text-[17px] font-semibold text-[#0f374c] mb-6">Jenis Kebutuhan Populer</h2>
+    <div className="w-full rounded-2xl bg-white p-4 md:p-6 shadow-[0px_4px_20px_rgba(44,134,154,0.05)] ring-1 ring-gray-100 flex flex-col h-full">
+      <h2 className="text-[15px] md:text-[17px] font-semibold text-[#0f374c] mb-4 md:mb-6">
+        Jenis Kebutuhan Populer
+      </h2>
 
       <div className="flex flex-col gap-5 flex-1 justify-center">
         {sortedNeeds.length === 0 ? (

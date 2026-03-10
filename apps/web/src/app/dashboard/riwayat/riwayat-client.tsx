@@ -443,16 +443,20 @@ export default function RiwayatClient({
   }, [reports]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-[1200px] mx-auto w-full">
+    <div className="flex flex-col gap-4 sm:gap-6 max-w-[1200px] mx-auto w-full px-4">
       {/* Page Header */}
       <div className="flex flex-col gap-1 text-center">
-        <h1 className="text-[30px] font-semibold text-[#2C869A] capitalize">Riwayat Laporan</h1>
-        <p className="text-[14px] text-black">Kelola dan pantau semua laporan bantuan dari warga</p>
+        <h1 className="text-xl sm:text-2xl md:text-[30px] font-semibold text-[#2C869A] capitalize">
+          Riwayat Laporan
+        </h1>
+        <p className="text-[13px] sm:text-[14px] text-black">
+          Kelola dan pantau semua laporan bantuan dari warga
+        </p>
       </div>
 
       {/* Filter Card */}
-      <div className="w-full rounded-xl border-2 border-black/30 bg-white p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="w-full rounded-xl border-2 border-black/30 bg-white p-4 sm:p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* Tanggal */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-800">Tanggal</label>
@@ -524,10 +528,10 @@ export default function RiwayatClient({
         </div>
 
         {/* Filter Actions */}
-        <div className="flex items-center justify-between mt-5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-4 sm:mt-5">
           <button
             onClick={handleApplyFilters}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
           >
             <Filter className="size-4" />
             Terapkan Filter
@@ -535,7 +539,7 @@ export default function RiwayatClient({
 
           <button
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
           >
             <RotateCcw className="size-4" />
             Reset Filter
@@ -544,7 +548,7 @@ export default function RiwayatClient({
       </div>
 
       {/* Reports Table */}
-      <div className="w-full rounded-2xl bg-white p-6 shadow-[0px_4px_20px_rgba(44,134,154,0.05)] ring-1 ring-gray-100">
+      <div className="w-full rounded-2xl bg-white p-4 sm:p-6 shadow-[0px_4px_20px_rgba(44,134,154,0.05)] ring-1 ring-gray-100">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-[17px] font-semibold text-[#0f374c]">
             Daftar Laporan
@@ -554,16 +558,105 @@ export default function RiwayatClient({
           </h2>
         </div>
 
-        <div className="w-full overflow-x-auto">
+        {/* Mobile Card Layout */}
+        <div className="md:hidden flex flex-col gap-3">
+          {paginatedReports.length === 0 ? (
+            <div className="py-12 text-center text-gray-400">
+              Tidak ada laporan yang sesuai dengan filter
+            </div>
+          ) : (
+            paginatedReports.map((report) => (
+              <div
+                key={report.id}
+                className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <span className="text-sm font-semibold text-gray-800 truncate">
+                      {report.lokasi}
+                    </span>
+                    <span className="text-xs text-gray-500">{formatDate(report.tanggal)}</span>
+                  </div>
+                  <StatusBadge status={report.status} />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-gray-500">{report.jenisBantuan}</span>
+                  <p className="text-sm text-gray-600 line-clamp-2">{report.deskripsi}</p>
+                </div>
+
+                {showActionColumn && (
+                  <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
+                    {isAdmin ? (
+                      <>
+                        <button
+                          onClick={() => handleOpenDetail(report)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                        >
+                          <Eye className="size-3.5" />
+                          Detail
+                        </button>
+                        <button
+                          onClick={() => handleOpenStatusSheet(report)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2C869A] rounded-lg border border-[#2C869A]/20 hover:bg-[#2C869A]/5 transition-colors"
+                        >
+                          <RefreshCw className="size-3.5" />
+                          Status
+                        </button>
+                        <button
+                          onClick={() => handleOpenWaSheet(report)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 rounded-lg border border-green-200 hover:bg-green-50 transition-colors"
+                        >
+                          <Send className="size-3.5" />
+                          WA
+                        </button>
+                        {userRole === "superadmin" && (
+                          <button
+                            onClick={() => handleDeleteReport(report.id)}
+                            className="inline-flex items-center justify-center size-8 ml-auto text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleOpenDetail(report)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                        >
+                          <Eye className="size-3.5" />
+                          Detail
+                        </button>
+                        <button
+                          onClick={() => handleOpenBantuanSheet(report)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#FFA918] rounded-lg border border-[#FFA918]/20 hover:bg-[#FFA918]/5 transition-colors"
+                        >
+                          <HandHelping className="size-3.5" />
+                          Bantuan
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table Layout */}
+        <div className="hidden md:block w-full overflow-x-auto">
           <table className="w-full text-left font-inter text-[14px]">
             <thead>
               <tr className="border-b border-gray-100 text-gray-500">
-                <th className="pb-4 pr-4 font-medium">Tanggal</th>
-                <th className="pb-4 px-4 font-medium">Lokasi (RW/RT)</th>
-                <th className="pb-4 px-4 font-medium">Jenis Bantuan</th>
-                <th className="pb-4 px-4 font-medium">Deskripsi</th>
-                <th className="pb-4 px-4 font-medium text-center">Status</th>
-                {showActionColumn && <th className="pb-4 pl-4 font-medium text-center">Aksi</th>}
+                <th className="pb-4 pr-4 font-medium whitespace-nowrap">Tanggal</th>
+                <th className="pb-4 px-4 font-medium whitespace-nowrap">Lokasi (RW/RT)</th>
+                <th className="pb-4 px-4 font-medium whitespace-nowrap">Jenis Bantuan</th>
+                <th className="pb-4 px-4 font-medium whitespace-nowrap">Deskripsi</th>
+                <th className="pb-4 px-4 font-medium text-center whitespace-nowrap">Status</th>
+                {showActionColumn && (
+                  <th className="pb-4 pl-4 font-medium text-center whitespace-nowrap">Aksi</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -576,9 +669,15 @@ export default function RiwayatClient({
               ) : (
                 paginatedReports.map((report) => (
                   <tr key={report.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 pr-4 text-gray-600">{formatDate(report.tanggal)}</td>
-                    <td className="py-4 px-4 text-gray-800 font-medium">{report.lokasi}</td>
-                    <td className="py-4 px-4 text-gray-600">{report.jenisBantuan}</td>
+                    <td className="py-4 pr-4 text-gray-600 whitespace-nowrap">
+                      {formatDate(report.tanggal)}
+                    </td>
+                    <td className="py-4 px-4 text-gray-800 font-medium whitespace-nowrap">
+                      {report.lokasi}
+                    </td>
+                    <td className="py-4 px-4 text-gray-600 whitespace-nowrap">
+                      {report.jenisBantuan}
+                    </td>
                     <td
                       className="py-4 px-4 text-gray-500 max-w-[200px] truncate"
                       title={report.deskripsi}
@@ -672,7 +771,7 @@ export default function RiwayatClient({
 
         {/* Pagination */}
         {filteredReports.length > 0 && (
-          <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
+          <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-100 pt-4">
             <p className="text-sm text-gray-500">
               Halaman {safePage} dari {totalPages}
             </p>
@@ -683,14 +782,14 @@ export default function RiwayatClient({
                 className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="size-4" />
-                Sebelumnya
+                <span className="hidden sm:inline">Sebelumnya</span>
               </button>
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={safePage >= totalPages}
                 className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Berikutnya
+                <span className="hidden sm:inline">Berikutnya</span>
                 <ChevronRight className="size-4" />
               </button>
             </div>
@@ -1074,7 +1173,7 @@ export default function RiwayatClient({
             <button
               onClick={handleBantuanSubmit}
               disabled={isPending || !bantuanKeterangan || bantuanKeterangan.length < 5}
-              className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
             >
               {isPending ? "Mengirim..." : "Kirim Bantuan"}
             </button>

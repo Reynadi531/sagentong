@@ -201,11 +201,11 @@ const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
 export const MobileSidebar: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   return (
     <Sheet>
-      <SheetTrigger render={<Button variant="outline" size="icon" className="md:hidden" />}>
+      <SheetTrigger render={<Button variant="outline" size="icon" className="lg:hidden" />}>
         <Menu className="size-5" />
         <span className="sr-only">Toggle navigation menu</span>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] p-0 border-r-0">
+      <SheetContent side="left" className="w-[85vw] max-w-[280px] p-0 border-r-0">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <SidebarContent roles={roles} session={session} />
       </SheetContent>
@@ -217,7 +217,7 @@ const Sidebar: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden min-h-screen w-[278px] shrink-0 border-r bg-white drop-shadow-sm md:block">
+      <aside className="hidden min-h-screen w-[278px] shrink-0 border-r bg-white drop-shadow-sm lg:block">
         <SidebarContent roles={roles} session={session} />
       </aside>
     </>

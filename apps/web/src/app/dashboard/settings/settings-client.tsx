@@ -104,9 +104,11 @@ export default function SettingsClient({ user }: SettingsClientProps) {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-[800px] mx-auto w-full px-4 py-6">
+    <div className="flex flex-col gap-6 md:gap-8 max-w-[800px] mx-auto w-full px-4 py-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-[30px] font-semibold text-[#2C869A] capitalize">Pengaturan Akun</h1>
+        <h1 className="text-xl sm:text-2xl md:text-[30px] font-semibold text-[#2C869A] capitalize">
+          Pengaturan Akun
+        </h1>
         <p className="text-[14px] text-gray-500">Kelola informasi profil dan keamanan akun Anda.</p>
       </div>
 
@@ -123,7 +125,7 @@ export default function SettingsClient({ user }: SettingsClientProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleUpdateProfile} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name">Nama Lengkap</Label>
@@ -171,7 +173,7 @@ export default function SettingsClient({ user }: SettingsClientProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleUpdateEmail} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -224,7 +226,7 @@ export default function SettingsClient({ user }: SettingsClientProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleChangePassword} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="currentPassword">Kata Sandi Saat Ini</Label>

@@ -145,7 +145,7 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
 
   if (isPending) {
     return (
-      <div className="p-10 flex justify-center min-h-[500px] items-center">
+      <div className="p-6 sm:p-10 flex justify-center min-h-[500px] items-center">
         <Loader />
       </div>
     );
@@ -210,7 +210,9 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
             <ArrowLeft className="w-4 h-4" /> Kembali
           </button>
         )}
-        <h1 className="text-[28px] font-bold text-[#0f374c] leading-tight mb-2">{titleText}</h1>
+        <h1 className="text-xl sm:text-[28px] font-bold text-[#0f374c] leading-tight mb-2">
+          {titleText}
+        </h1>
         <p className="text-gray-500 font-light text-[15px]">
           Lengkapi data di bawah ini untuk menjadi bagian dari SaGentong.
         </p>

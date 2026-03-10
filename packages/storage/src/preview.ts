@@ -68,7 +68,7 @@ export function createPreviewHandler(options?: PreviewHandlerOptions) {
         ? "inline"
         : `attachment; filename="${result.originalFilename ?? "download"}"`;
 
-      return new Response(result.buffer, {
+      return new Response(new Uint8Array(result.buffer), {
         status: 200,
         headers: {
           "Content-Type": result.contentType,

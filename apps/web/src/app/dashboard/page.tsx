@@ -139,25 +139,27 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="flex flex-col gap-6 max-w-[1200px] mx-auto w-full">
+    <div className="flex flex-col gap-4 md:gap-6 max-w-[1200px] mx-auto w-full">
       {/* Top Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         <StatCard title="Total Laporan Hari Ini" value={stats.total} theme="teal" />
         <StatCard title="Laporan Belum Di Proses" value={stats.unprocessed} theme="orange" />
         <StatCard title="Laporan Dikirim Ke Admin" value={stats.toAdmin} theme="green" />
       </div>
 
       {/* Main Table Area */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
         {/* Left Column: Table (Takes up 2/3 width on large screens) */}
-        <div className="xl:col-span-2 flex flex-col gap-6">
+        <div className="xl:col-span-2 flex flex-col gap-4 md:gap-6">
           {(session.user.role === "perangkat_desa" || session.user.role === "superadmin") && (
             <div className="flex justify-end">
               <Link
                 href="/dashboard/input-kebutuhan"
-                className="bg-[#FFA918] hover:bg-[#e59815] text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm inline-flex items-center gap-2"
+                className="bg-[#FFA918] hover:bg-[#e59815] text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-sm inline-flex items-center gap-2 text-sm sm:text-base"
               >
-                <span className="text-xl leading-none">+</span> Tambahkan Laporan
+                <span className="text-xl leading-none">+</span>
+                <span className="hidden sm:inline">Tambahkan Laporan</span>
+                <span className="sm:hidden">Laporan Baru</span>
               </Link>
             </div>
           )}
@@ -165,7 +167,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Right Column: Side Panels */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 md:gap-6">
           <PopularNeedsProgress needs={popularNeeds} />
           <RecentActivityFeed activities={recentActivities} />
         </div>

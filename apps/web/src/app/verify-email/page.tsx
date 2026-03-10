@@ -18,7 +18,7 @@ function VerifyEmailContent() {
     <>
       <Header />
       <div className="flex min-h-[calc(100vh-70px)] items-center justify-center p-4 sm:p-8 bg-[#f4f7f6]">
-        <div className="w-full max-w-md bg-white rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-10 text-center">
+        <div className="w-full max-w-md bg-white rounded-2xl sm:rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-6 sm:p-10 text-center">
           {isUnverified ? (
             <>
               <div className="w-20 h-20 rounded-2xl bg-[#2c869a]/10 flex items-center justify-center mx-auto mb-8 ring-1 ring-[#2c869a]/20">
@@ -94,7 +94,7 @@ export default function VerifyEmailPage() {
         <>
           <Header />
           <div className="flex min-h-[calc(100vh-70px)] items-center justify-center p-4 bg-[#f4f7f6]">
-            <div className="w-full max-w-md bg-white rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-10 text-center">
+            <div className="w-full max-w-md bg-white rounded-2xl sm:rounded-[28px] shadow-[0px_8px_32px_rgba(44,134,154,0.08)] p-6 sm:p-10 text-center">
               <Loader2 className="w-10 h-10 text-[#2c869a] animate-spin mx-auto mb-4" />
               <p className="text-gray-500 text-[15px]">Memverifikasi email...</p>
             </div>

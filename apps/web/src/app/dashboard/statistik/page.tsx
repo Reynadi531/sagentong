@@ -144,26 +144,26 @@ export default async function StatistikLaporanPage() {
       : "Belum ada data wilayah dominan.";
 
   return (
-    <div className="flex flex-col gap-6 max-w-[1200px] mx-auto w-full px-4">
+    <div className="flex flex-col gap-4 md:gap-6 max-w-[1200px] mx-auto w-full px-4">
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-bold text-[#0f374c]">Statistik Laporan</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-[#0f374c]">Statistik Laporan</h2>
         <p className="text-gray-500 text-[14px]">
           Analisis data laporan kebutuhan warga Desa Gentong Balap.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
         {/* Main Charts Column */}
-        <div className="xl:col-span-2 flex flex-col gap-6">
+        <div className="xl:col-span-2 flex flex-col gap-4 md:gap-6">
           <LaporanLineChart data={lineChartData} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <AssistancePieChart data={pieChartData} />
             <WilayahBarChart data={barChartData} />
           </div>
         </div>
 
         {/* insights Column */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 md:gap-6">
           <h3 className="text-[17px] font-semibold text-[#0f374c]">Insight Statistik</h3>
           <StatistikInsightCard type="trend" title={trendText} description={trendDesc} />
           <StatistikInsightCard

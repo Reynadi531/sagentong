@@ -53,7 +53,9 @@ export default async function VerifikasiPage() {
               <ShieldCheck className="w-5 h-5 text-[#2c869a]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#0f374c]">Verifikasi Perangkat Desa</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-[#0f374c]">
+                Verifikasi Perangkat Desa
+              </h1>
               <p className="text-sm text-gray-400">
                 Kelola dan verifikasi akun Perangkat Desa yang terdaftar.
               </p>
@@ -61,7 +63,7 @@ export default async function VerifikasiPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
           <VerificationTable users={perangkatDesaUsers} />
         </div>
       </div>
