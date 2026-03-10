@@ -91,12 +91,18 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
           (data) => {
             // Phone number is required only for relawan
             if (role === "relawan") {
-              return data.phoneNumber.trim().length >= 10;
+              const digits = data.phoneNumber.replace(/\D/g, "");
+              return (
+                digits.length >= 10 &&
+                digits.length <= 15 &&
+                (digits.startsWith("0") || digits.startsWith("62") || digits.startsWith("8"))
+              );
             }
             return true;
           },
           {
-            message: "Nomor telepon harus minimal 10 digit",
+            message:
+              "Nomor telepon tidak valid. Gunakan format 08xx, +62xx, atau 62xx (min. 10 digit)",
             path: ["phoneNumber"],
           },
         )
@@ -338,7 +344,7 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
                 {(field) => (
                   <div className="space-y-1.5">
                     <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
-                      Nomor Telepon
+                      Nomor WhatsApp
                     </Label>
                     <Input
                       id={field.name}
@@ -350,6 +356,10 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                     />
+                    <p className="text-amber-600 text-xs font-medium">
+                      Pastikan menggunakan nomor WhatsApp aktif. Nomor ini akan digunakan untuk
+                      menerima notifikasi kebencanaan.
+                    </p>
                     {field.state.meta.errors.map((error) => (
                       <p key={error?.message} className="text-red-500 text-xs">
                         {error?.message}

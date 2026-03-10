@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@sagentong/auth";
+import { auth, normalizePhoneNumber } from "@sagentong/auth";
 import { db } from "@sagentong/db";
 import { laporan } from "@sagentong/db/schema/laporan";
 import { headers } from "next/headers";
@@ -57,7 +57,7 @@ export async function submitReport(data: ReportInput): Promise<SubmitReportResul
   try {
     await db.insert(laporan).values({
       pelaporName: parsed.data.pelaporName,
-      contactNumber: parsed.data.contactNumber,
+      contactNumber: normalizePhoneNumber(parsed.data.contactNumber),
       rw: parsed.data.rw,
       rt: parsed.data.rt,
       addressDetail: parsed.data.addressDetail,

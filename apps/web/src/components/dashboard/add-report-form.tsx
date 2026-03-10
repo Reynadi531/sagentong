@@ -251,6 +251,9 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                   />
+                  <p className="text-amber-600 text-xs font-medium">
+                    Pastikan menggunakan nomor WhatsApp aktif pelapor.
+                  </p>
                   {field.state.meta.errors.map((error) => (
                     <p key={error?.message} className="text-red-500 text-xs">
                       {error?.message}

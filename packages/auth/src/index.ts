@@ -6,6 +6,35 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { createTransport } from "nodemailer";
 
+/**
+ * Normalize an Indonesian phone number to international format without '+' prefix.
+ * Handles all common input formats:
+ *   "08123456789"        → "628123456789"
+ *   "+628123456789"      → "628123456789"
+ *   "628123456789"       → "628123456789"
+ *   "0812-3456-789"      → "628123456789"
+ *   "+62 812 3456 789"   → "628123456789"
+ *   "(+62)812-3456-789"  → "628123456789"
+ *   "8123456789"         → "628123456789"
+ */
+export function normalizePhoneNumber(phone: string): string {
+  // Strip all non-digit characters (spaces, dashes, parentheses, plus sign, etc.)
+  const digits = phone.replace(/\D/g, "");
+
+  if (digits.startsWith("0")) {
+    // Local format: 08xxx → 628xxx
+    return `62${digits.slice(1)}`;
+  }
+
+  if (digits.startsWith("62")) {
+    // Already international format
+    return digits;
+  }
+
+  // Bare number without country code (e.g. "8123456789") → prepend 62
+  return `62${digits}`;
+}
+
 const transporter = createTransport({
   host: env.SMTP_HOST,
   port: env.SMTP_PORT,
@@ -153,9 +182,15 @@ export const auth = betterAuth({
           const emailAutoVerifiedRoles = ["perangkat_desa", "superadmin"];
           const isEmailVerified = emailAutoVerifiedRoles.includes(user.role as string);
 
+          // Normalize phone number to 62xxxx format before saving
+          const normalizedPhone = user.phoneNumber
+            ? normalizePhoneNumber(user.phoneNumber as string)
+            : user.phoneNumber;
+
           return {
             data: {
               ...user,
+              phoneNumber: normalizedPhone,
               verified: isAppVerified,
               emailVerified: isEmailVerified,
             },
