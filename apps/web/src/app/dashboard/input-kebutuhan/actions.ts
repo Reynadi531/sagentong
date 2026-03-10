@@ -19,6 +19,8 @@ const reportSchema = z.object({
   description: z.string().min(1, "Deskripsi kondisi wajib diisi"),
   needsType: z.string().min(1, "Jenis kebutuhan wajib diisi"),
   assistanceCategory: z.enum(["Dana", "Jasa", "Barang"]),
+  latitude: z.string().optional().nullable(),
+  longitude: z.string().optional().nullable(),
   evidenceImageKey: z.string().nullable(),
 });
 
@@ -67,6 +69,8 @@ export async function submitReport(data: ReportInput): Promise<SubmitReportResul
       description: parsed.data.description,
       needsType: parsed.data.needsType,
       assistanceCategory: parsed.data.assistanceCategory,
+      latitude: parsed.data.latitude,
+      longitude: parsed.data.longitude,
       evidenceImage: parsed.data.evidenceImageKey,
       perangkatDesaId: session.user.id,
     });

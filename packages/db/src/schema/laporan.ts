@@ -14,6 +14,8 @@ export const laporan = pgTable("laporan", {
   needsType: text("needs_type").notNull(), // Specific need like 'Bantuan Sembako'
   assistanceCategory: text("assistance_category"), // General category like 'Dana', 'Jasa', 'Barang'
   description: text("description").notNull(),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
   evidenceImage: text("evidence_image"),
   status: text("status").notNull().default("Menunggu"), // 'Menunggu', 'Diverifikasi', 'Diproses', 'Selesai'
   perangkatDesaId: text("perangkat_desa_id").references(() => user.id, { onDelete: "set null" }), // User who verified/manages this

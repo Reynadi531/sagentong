@@ -144,6 +144,8 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
       description: "",
       needsType: "",
       assistanceCategory: "Dana" as "Dana" | "Jasa" | "Barang",
+      latitude: "",
+      longitude: "",
     },
     onSubmit: async ({ value }) => {
       const data: ReportInput = {
@@ -267,20 +269,15 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-gray-700">RW</label>
-                  <div className="relative">
-                    <select
-                      className="appearance-none w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    >
-                      <option value="">Pilih RW</option>
-                      <option value="01">01</option>
-                      <option value="02">02</option>
-                      <option value="03">03</option>
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
-                  </div>
+                  <input
+                    type="number"
+                    min={1}
+                    placeholder="Contoh: 01"
+                    className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
                   {field.state.meta.errors.map((error) => (
                     <p key={error?.message} className="text-red-500 text-xs">
                       {error?.message}
@@ -294,20 +291,15 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-gray-700">RT</label>
-                  <div className="relative">
-                    <select
-                      className="appearance-none w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    >
-                      <option value="">Pilih RT</option>
-                      <option value="01">01</option>
-                      <option value="02">02</option>
-                      <option value="03">03</option>
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
-                  </div>
+                  <input
+                    type="number"
+                    min={1}
+                    placeholder="Contoh: 03"
+                    className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
                   {field.state.meta.errors.map((error) => (
                     <p key={error?.message} className="text-red-500 text-xs">
                       {error?.message}
@@ -339,6 +331,40 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                 )}
               </form.Field>
             </div>
+
+            <form.Field name="latitude">
+              {(field) => (
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-gray-700">Latitude (Opsional)</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: -6.175392"
+                    className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field name="longitude">
+              {(field) => (
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-gray-700">
+                    Longitude (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 106.827153"
+                    className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </div>
+              )}
+            </form.Field>
           </div>
         </section>
 
@@ -491,7 +517,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                       type="button"
                       onClick={() => field.handleChange(item.value)}
                       className={cn(
-                        "flex items-center justify-between p-4 rounded-2xl border-2 transition-all group",
+                        "flex items-center justify-start p-4 rounded-2xl border-2 transition-all group text-left",
                         field.state.value === item.value
                           ? "border-[#2C869A] bg-[#2C869A]/5 shadow-inner"
                           : "border-gray-100 hover:border-[#2C869A]/30 hover:bg-gray-50",
@@ -500,7 +526,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                       <div className="flex items-center gap-3">
                         <div
                           className={cn(
-                            "p-2 rounded-xl transition-colors",
+                            "p-2 rounded-xl transition-colors shrink-0",
                             field.state.value === item.value
                               ? "bg-[#2C869A] text-white"
                               : "bg-gray-100 text-gray-400 group-hover:bg-[#2C869A]/10 group-hover:text-[#2C869A]",
@@ -508,9 +534,13 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                         >
                           <item.icon className="size-5" />
                         </div>
-                        <div className="flex flex-col items-start">
-                          <span className="font-bold text-sm text-[#0f374c]">{item.label}</span>
-                          <span className="text-[10px] text-gray-500">{item.desc}</span>
+                        <div className="flex flex-col items-start min-w-0">
+                          <span className="font-bold text-sm text-[#0f374c] truncate w-full">
+                            {item.label}
+                          </span>
+                          <span className="text-[10px] text-gray-500 leading-tight">
+                            {item.desc}
+                          </span>
                         </div>
                       </div>
                     </button>

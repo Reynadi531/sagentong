@@ -32,6 +32,8 @@ export default async function RiwayatPage() {
       assistanceCategory: laporan.assistanceCategory,
       description: laporan.description,
       status: laporan.status,
+      latitude: laporan.latitude,
+      longitude: laporan.longitude,
       evidenceImage: laporan.evidenceImage,
       createdAt: laporan.createdAt,
     })
@@ -50,6 +52,8 @@ export default async function RiwayatPage() {
     assistanceCategory: r.assistanceCategory,
     needsType: r.needsType,
     deskripsi: r.description,
+    latitude: r.latitude,
+    longitude: r.longitude,
     evidenceImage: r.evidenceImage,
     status: r.status as ReportData["status"],
     tanggal: r.createdAt.toISOString(),

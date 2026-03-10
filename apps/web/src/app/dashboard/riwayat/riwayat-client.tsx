@@ -58,6 +58,8 @@ export interface ReportData {
   assistanceCategory: string | null;
   needsType: string;
   deskripsi: string;
+  latitude: string | null;
+  longitude: string | null;
   evidenceImage: string | null;
   status: ReportStatus;
   tanggal: string; // ISO string from server
@@ -664,6 +666,12 @@ export default function RiwayatClient({
                 <DetailRow label="Lokasi" value={selectedReport.lokasi} />
                 <DetailRow label="Jenis Bantuan" value={selectedReport.jenisBantuan} />
                 <DetailRow label="Kebutuhan" value={selectedReport.needsType} />
+                {(selectedReport.latitude || selectedReport.longitude) && (
+                  <DetailRow
+                    label="Koordinat"
+                    value={`${selectedReport.latitude ?? "-"}, ${selectedReport.longitude ?? "-"}`}
+                  />
+                )}
                 <div className="flex justify-between text-sm items-center">
                   <span className="text-gray-500">Status</span>
                   <StatusBadge status={selectedReport.status} />
