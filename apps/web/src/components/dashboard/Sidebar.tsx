@@ -58,6 +58,7 @@ const exludedNavItemsForRoles: Record<"superadmin" | "relawan" | "perangkat_desa
 
 const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   const pathname = usePathname();
+  const isUnverifiedPerangkatDesa = roles === "perangkat_desa" && !session?.user.verified;
 
   return (
     <div className="flex h-full flex-col bg-white">
@@ -76,6 +77,11 @@ const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
         {navItems.map((item) => {
           // Skip nav items based on user role
           if (exludedNavItemsForRoles[roles].includes(item.href)) {
+            return null;
+          }
+
+          // If unverified perangkat_desa, hide all except Dashboard
+          if (isUnverifiedPerangkatDesa && item.href !== "/dashboard") {
             return null;
           }
 

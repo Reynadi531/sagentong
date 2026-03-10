@@ -1,9 +1,8 @@
 import { auth } from "@sagentong/auth";
 import { db } from "@sagentong/db";
 import { laporan } from "@sagentong/db/schema/laporan";
-import { langgananLaporan } from "@sagentong/db/schema/langganan";
 import { user } from "@sagentong/db/schema/auth";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, or } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import RiwayatClient, { type ReportData, type Subscriber } from "./riwayat-client";
@@ -54,48 +53,24 @@ export default async function RiwayatPage() {
     tanggal: r.createdAt.toISOString(),
   }));
 
-  // Fetch subscription data based on role
-  let subscribedIds: string[] = [];
-  let subscribers: Record<string, Subscriber[]> = {};
-
+  // Fetch all relawan for broadcasting
+  let allRelawans: Subscriber[] = [];
   const userRole = session.user.role;
 
-  if (userRole === "relawan") {
-    // Relawan: fetch their own subscriptions
-    const subs = await db
-      .select({ laporanId: langgananLaporan.laporanId })
-      .from(langgananLaporan)
-      .where(eq(langgananLaporan.userId, session.user.id));
-
-    subscribedIds = subs.map((s) => s.laporanId);
-  } else if (userRole === "perangkat_desa" || userRole === "superadmin") {
-    // Admin: fetch all subscribers grouped by laporan
-    const allSubs = await db
+  if (userRole === "perangkat_desa" || userRole === "superadmin") {
+    const relawans = await db
       .select({
-        laporanId: langgananLaporan.laporanId,
         name: user.name,
         phoneNumber: user.phoneNumber,
       })
-      .from(langgananLaporan)
-      .innerJoin(user, eq(langgananLaporan.userId, user.id));
+      .from(user)
+      .where(eq(user.role, "relawan"));
 
-    for (const sub of allSubs) {
-      if (!subscribers[sub.laporanId]) {
-        subscribers[sub.laporanId] = [];
-      }
-      subscribers[sub.laporanId].push({
-        name: sub.name,
-        phoneNumber: sub.phoneNumber,
-      });
-    }
+    allRelawans = relawans.map((r) => ({
+      name: r.name,
+      phoneNumber: r.phoneNumber,
+    }));
   }
 
-  return (
-    <RiwayatClient
-      reports={reports}
-      userRole={userRole}
-      subscribedIds={subscribedIds}
-      subscribers={subscribers}
-    />
-  );
+  return <RiwayatClient reports={reports} userRole={userRole} allRelawans={allRelawans} />;
 }

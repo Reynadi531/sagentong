@@ -71,7 +71,7 @@ function buildVerificationEmailHtml(userName: string, verifyUrl: string): string
             <td style="padding:36px 36px 20px;">
               <p style="margin:0 0 8px;color:#0f374c;font-size:18px;font-weight:600;">Halo, ${userName}!</p>
               <p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.7;">
-                Terima kasih telah mendaftar sebagai <strong style="color:#2c869a;">Relawan</strong> di SaGentong. Untuk mengaktifkan akun Anda, silakan verifikasi alamat email Anda dengan menekan tombol di bawah ini.
+                Terima kasih telah mendaftar di SaGentong. Untuk mengaktifkan akun Anda, silakan verifikasi alamat email Anda dengan menekan tombol di bawah ini.
               </p>
               <!-- CTA Button -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">

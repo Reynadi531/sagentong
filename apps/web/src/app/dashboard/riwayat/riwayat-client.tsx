@@ -11,8 +11,6 @@ import {
   RefreshCw,
   Send,
   Eye,
-  Bell,
-  BellOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -33,7 +31,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { updateReportStatus, subscribeLaporan, unsubscribeLaporan } from "./actions";
+import { updateReportStatus } from "./actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,8 +62,7 @@ export interface Subscriber {
 export interface RiwayatClientProps {
   reports: ReportData[];
   userRole: string;
-  subscribedIds: string[];
-  subscribers: Record<string, Subscriber[]>;
+  allRelawans: Subscriber[];
 }
 
 // ---------------------------------------------------------------------------
@@ -171,15 +168,13 @@ function StatusBadge({ status }: { status: ReportStatus }) {
 export default function RiwayatClient({
   reports: initialReports,
   userRole,
-  subscribedIds: initialSubscribedIds,
-  subscribers: initialSubscribers,
+  allRelawans,
 }: RiwayatClientProps) {
   const isAdmin = userRole === "perangkat_desa" || userRole === "superadmin";
   const isRelawan = userRole === "relawan";
 
   // State
   const [reports, setReports] = useState<ReportData[]>(initialReports);
-  const [subscribedIds, setSubscribedIds] = useState<string[]>(initialSubscribedIds);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(initialFilters);
   const [currentPage, setCurrentPage] = useState(1);
@@ -280,36 +275,6 @@ export default function RiwayatClient({
         setReports((prev) =>
           prev.map((r) => (r.id === reportId ? { ...r, status: previousStatus } : r)),
         );
-        toast.error(result.message);
-      }
-    });
-  };
-
-  const handleSubscribe = (reportId: string) => {
-    // Optimistic
-    setSubscribedIds((prev) => [...prev, reportId]);
-
-    startTransition(async () => {
-      const result = await subscribeLaporan(reportId);
-      if (result.success) {
-        toast.success(result.message);
-      } else {
-        setSubscribedIds((prev) => prev.filter((id) => id !== reportId));
-        toast.error(result.message);
-      }
-    });
-  };
-
-  const handleUnsubscribe = (reportId: string) => {
-    // Optimistic
-    setSubscribedIds((prev) => prev.filter((id) => id !== reportId));
-
-    startTransition(async () => {
-      const result = await unsubscribeLaporan(reportId);
-      if (result.success) {
-        toast.success(result.message);
-      } else {
-        setSubscribedIds((prev) => [...prev, reportId]);
         toast.error(result.message);
       }
     });
@@ -603,35 +568,6 @@ export default function RiwayatClient({
           )}
 
           <SheetFooter>
-            {isRelawan && selectedReport && (
-              <>
-                {subscribedIds.includes(selectedReport.id) ? (
-                  <button
-                    onClick={() => {
-                      handleUnsubscribe(selectedReport.id);
-                      setDetailSheetOpen(false);
-                    }}
-                    disabled={isPending}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    <BellOff className="size-4" />
-                    Batal Langganan
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      handleSubscribe(selectedReport.id);
-                      setDetailSheetOpen(false);
-                    }}
-                    disabled={isPending}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50"
-                  >
-                    <Bell className="size-4" />
-                    Langganan Laporan
-                  </button>
-                )}
-              </>
-            )}
             <SheetClose
               render={
                 <Button variant="outline" className="rounded-lg">
@@ -713,9 +649,7 @@ export default function RiwayatClient({
             <SheetTitle className="text-base font-semibold text-[#0f374c]">
               Broadcast WhatsApp
             </SheetTitle>
-            <SheetDescription>
-              Kirim informasi laporan ini kepada relawan yang berlangganan.
-            </SheetDescription>
+            <SheetDescription>Kirim informasi laporan ini kepada para relawan.</SheetDescription>
           </SheetHeader>
 
           {selectedReport && (
@@ -738,47 +672,41 @@ export default function RiwayatClient({
                 />
               </div>
 
-              {/* Subscribed relawan list */}
+              {/* Relawan list */}
               <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium text-gray-800">Relawan Berlangganan</h3>
-                {(() => {
-                  const subs = initialSubscribers[selectedReport.id] ?? [];
-                  if (subs.length === 0) {
-                    return (
-                      <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-3">
-                        Belum ada relawan yang berlangganan laporan ini.
-                      </p>
-                    );
-                  }
-                  return (
-                    <div className="space-y-2">
-                      {subs.map((sub, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3"
-                        >
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-sm font-medium text-gray-800">{sub.name}</span>
-                            <span className="text-xs text-gray-500">
-                              {sub.phoneNumber ?? "Nomor tidak tersedia"}
-                            </span>
-                          </div>
-                          {sub.phoneNumber ? (
-                            <button
-                              onClick={() => handleSendWhatsApp(sub.phoneNumber!)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2C9A3D] hover:bg-[#237e31] text-white text-xs font-semibold rounded-lg transition-colors"
-                            >
-                              <Send className="size-3" />
-                              Kirim
-                            </button>
-                          ) : (
-                            <span className="text-xs text-gray-400">-</span>
-                          )}
+                <h3 className="text-sm font-medium text-gray-800">Daftar Relawan</h3>
+                {allRelawans.length === 0 ? (
+                  <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-3">
+                    Belum ada relawan yang terdaftar.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {allRelawans.map((sub, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3"
+                      >
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-medium text-gray-800">{sub.name}</span>
+                          <span className="text-xs text-gray-500">
+                            {sub.phoneNumber ?? "Nomor tidak tersedia"}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  );
-                })()}
+                        {sub.phoneNumber ? (
+                          <button
+                            onClick={() => handleSendWhatsApp(sub.phoneNumber!)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2C9A3D] hover:bg-[#237e31] text-white text-xs font-semibold rounded-lg transition-colors"
+                          >
+                            <Send className="size-3" />
+                            Kirim
+                          </button>
+                        ) : (
+                          <span className="text-xs text-gray-400">-</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

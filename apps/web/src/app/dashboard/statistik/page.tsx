@@ -3,8 +3,23 @@ import LaporanLineChart from "@/components/dashboard/laporan-line-chart";
 import AssistancePieChart from "@/components/dashboard/assistance-pie-chart";
 import WilayahBarChart from "@/components/dashboard/wilayah-bar-chart";
 import StatistikInsightCard from "@/components/dashboard/statistik-insight-card";
+import { auth } from "@sagentong/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function StatistikLaporanPage() {
+export default async function StatistikLaporanPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/login" as any);
+  }
+
+  if (session.user.role === "perangkat_desa" && !session.user.verified) {
+    redirect("/dashboard/pending" as any);
+  }
+
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] mx-auto w-full px-4">
       <div className="flex flex-col gap-2">

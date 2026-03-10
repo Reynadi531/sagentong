@@ -56,16 +56,10 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
         },
         {
           onSuccess: () => {
-            if (role === "relawan") {
-              // Relawan needs email verification — show confirmation screen
-              setRegisteredEmail(value.email);
-              setEmailSent(true);
-              toast.success("Akun berhasil dibuat! Cek email Anda untuk verifikasi.");
-            } else {
-              // perangkat_desa goes to dashboard (then gets redirected to pending)
-              router.push("/login");
-              toast.success("Pendaftaran berhasil");
-            }
+            // Both relawan and perangkat_desa need email verification
+            setRegisteredEmail(value.email);
+            setEmailSent(true);
+            toast.success("Akun berhasil dibuat! Cek email Anda untuk verifikasi.");
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);

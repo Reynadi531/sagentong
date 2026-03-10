@@ -1,0 +1,1 @@
+DROP TABLE "langganan_laporan" CASCADE;
