@@ -13,6 +13,10 @@ export default async function InputKebutuhanPage() {
     redirect("/login" as any);
   }
 
+  if (session.user.role === "relawan") {
+    redirect("/dashboard" as any);
+  }
+
   if (session.user.role === "perangkat_desa" && !session.user.verified) {
     redirect("/dashboard/pending" as any);
   }

@@ -151,14 +151,16 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Left Column: Table (Takes up 2/3 width on large screens) */}
         <div className="xl:col-span-2 flex flex-col gap-6">
-          <div className="flex justify-end">
-            <Link
-              href="/dashboard/input-kebutuhan"
-              className="bg-[#FFA918] hover:bg-[#e59815] text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm inline-flex items-center gap-2"
-            >
-              <span className="text-xl leading-none">+</span> Tambahkan Laporan
-            </Link>
-          </div>
+          {(session.user.role === "perangkat_desa" || session.user.role === "superadmin") && (
+            <div className="flex justify-end">
+              <Link
+                href="/dashboard/input-kebutuhan"
+                className="bg-[#FFA918] hover:bg-[#e59815] text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-sm inline-flex items-center gap-2"
+              >
+                <span className="text-xl leading-none">+</span> Tambahkan Laporan
+              </Link>
+            </div>
+          )}
           <RecentReportsTable reports={recentReports} />
         </div>
 

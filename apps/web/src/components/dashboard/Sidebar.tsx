@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   BarChart2,
@@ -12,11 +12,23 @@ import {
   Menu,
   ShieldUser,
   Package,
+  LogOut,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { auth } from "@sagentong/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
 
 const navItems = [
   {
@@ -64,7 +76,18 @@ const exludedNavItemsForRoles: Record<"superadmin" | "relawan" | "perangkat_desa
 
 const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const isUnverifiedPerangkatDesa = roles === "perangkat_desa" && !session?.user.verified;
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+        },
+      },
+    });
+  };
 
   return (
     <div className="flex h-full flex-col bg-white">
@@ -135,9 +158,40 @@ const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
                   : "Super Admin"}
             </span>
           </div>
-          <button className="shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors">
-            <Settings className="size-6 text-[#247D8B]" strokeWidth={2.5} />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button className="shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none">
+                  <Settings className="size-6 text-[#247D8B]" strokeWidth={2.5} />
+                </button>
+              }
+            />
+            <DropdownMenuContent align="end" side="top" sideOffset={12} className="min-w-[200px]">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 p-0">
+                  <Link
+                    href="/dashboard/settings"
+                    className="flex items-center gap-2 w-full px-2 py-2"
+                  >
+                    <User className="size-4" />
+                    Profil
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  className="gap-2 cursor-pointer"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="size-4" />
+                  Keluar
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
