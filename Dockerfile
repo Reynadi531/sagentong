@@ -25,7 +25,7 @@ ARG DATABASE_URL
 ENV NEXT_PUBLIC_AUTH_URL=$NEXT_PUBLIC_AUTH_URL
 ENV DATABASE_URL=$DATABASE_URL
 
-RUN bun run build --filter=web...
+RUN bun run build
 
 # Stage 3: Runner - Final production image using Bun Alpine
 FROM oven/bun:1-alpine AS runner
