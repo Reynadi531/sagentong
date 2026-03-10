@@ -15,9 +15,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== "perangkat_desa" && session.user.role !== "superadmin") {
+  if (
+    session.user.role !== "perangkat_desa" &&
+    session.user.role !== "superadmin" &&
+    session.user.role !== "relawan"
+  ) {
     return Response.json(
-      { error: "Forbidden: Hanya perangkat desa dan superadmin yang dapat mengunggah file." },
+      { error: "Forbidden: Anda tidak memiliki izin untuk mengunggah file." },
       { status: 403 },
     );
   }

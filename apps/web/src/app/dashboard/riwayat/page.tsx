@@ -32,6 +32,7 @@ export default async function RiwayatPage() {
       assistanceCategory: laporan.assistanceCategory,
       description: laporan.description,
       status: laporan.status,
+      evidenceImage: laporan.evidenceImage,
       createdAt: laporan.createdAt,
     })
     .from(laporan)
@@ -49,6 +50,7 @@ export default async function RiwayatPage() {
     assistanceCategory: r.assistanceCategory,
     needsType: r.needsType,
     deskripsi: r.description,
+    evidenceImage: r.evidenceImage,
     status: r.status as ReportData["status"],
     tanggal: r.createdAt.toISOString(),
   }));

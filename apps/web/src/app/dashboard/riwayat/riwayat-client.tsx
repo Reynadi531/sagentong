@@ -12,6 +12,13 @@ import {
   Send,
   Eye,
   Trash2,
+  HandHelping,
+  Upload,
+  ImageIcon,
+  Loader2,
+  CreditCard,
+  Wrench,
+  Box,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -32,7 +39,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { updateReportStatus, deleteReport } from "./actions";
+import { updateReportStatus, deleteReport, submitBantuan } from "./actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,6 +58,7 @@ export interface ReportData {
   assistanceCategory: string | null;
   needsType: string;
   deskripsi: string;
+  evidenceImage: string | null;
   status: ReportStatus;
   tanggal: string; // ISO string from server
 }
@@ -189,10 +197,19 @@ export default function RiwayatClient({
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [statusSheetOpen, setStatusSheetOpen] = useState(false);
   const [waSheetOpen, setWaSheetOpen] = useState(false);
+  const [bantuanSheetOpen, setBantuanSheetOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
   const [newStatus, setNewStatus] = useState<ReportStatus>("Menunggu");
   const [waMessage, setWaMessage] = useState("");
+  const [bantuanKeterangan, setBantuanKeterangan] = useState("");
+  const [jenisBantuan, setJenisBantuan] = useState<string>("Dana");
   const [isPending, startTransition] = useTransition();
+
+  const [uploadedFile, setUploadedFile] = useState<{ key: string; previewUrl: string } | null>(
+    null,
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // ---------------------------------------------------------------------------
   // Filtering & Pagination
@@ -263,6 +280,34 @@ export default function RiwayatClient({
     setWaSheetOpen(true);
   };
 
+  const handleOpenBantuanSheet = (report: ReportData) => {
+    setSelectedReport(report);
+    setBantuanKeterangan("");
+    setJenisBantuan("Dana");
+    setUploadedFile(null);
+    setBantuanSheetOpen(true);
+  };
+
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      const result = await response.json();
+      if (!response.ok) {
+        toast.error(result.error ?? "Gagal mengunggah file.");
+        return;
+      }
+      setUploadedFile({ key: result.key, previewUrl: URL.createObjectURL(file) });
+      toast.success("Foto berhasil diunggah.");
+    } catch {
+      toast.error("Terjadi kesalahan saat mengunggah file.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleStatusSubmit = () => {
     if (!selectedReport) return;
 
@@ -281,6 +326,30 @@ export default function RiwayatClient({
         setReports((prev) =>
           prev.map((r) => (r.id === reportId ? { ...r, status: previousStatus } : r)),
         );
+        toast.error(result.message);
+      }
+    });
+  };
+
+  const handleBantuanSubmit = () => {
+    if (!selectedReport) return;
+
+    if (!bantuanKeterangan || bantuanKeterangan.length < 5) {
+      toast.error("Keterangan minimal 5 karakter.");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await submitBantuan(selectedReport.id, {
+        keterangan: bantuanKeterangan,
+        jenisBantuan,
+        evidenceImage: uploadedFile?.key,
+      });
+      if (result.success) {
+        toast.success(result.message);
+        setBantuanSheetOpen(false);
+        setUploadedFile(null);
+      } else {
         toast.error(result.message);
       }
     });
@@ -520,14 +589,23 @@ export default function RiwayatClient({
                               </DropdownMenuContent>
                             </DropdownMenu>
                           ) : (
-                            /* Relawan: single detail button */
-                            <button
-                              onClick={() => handleOpenDetail(report)}
-                              className="inline-flex items-center justify-center size-8 rounded-lg text-gray-500 hover:text-[#2C869A] hover:bg-[#2C869A]/10 transition-colors"
-                              title="Lihat Detail"
-                            >
-                              <Eye className="size-4" />
-                            </button>
+                            /* Relawan: detail and bantuan buttons */
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleOpenDetail(report)}
+                                className="inline-flex items-center justify-center size-8 rounded-lg text-gray-500 hover:text-[#2C869A] hover:bg-[#2C869A]/10 transition-colors"
+                                title="Lihat Detail"
+                              >
+                                <Eye className="size-4" />
+                              </button>
+                              <button
+                                onClick={() => handleOpenBantuanSheet(report)}
+                                className="inline-flex items-center justify-center size-8 rounded-lg text-gray-500 hover:text-[#FFA918] hover:bg-[#FFA918]/10 transition-colors"
+                                title="Beri Bantuan"
+                              >
+                                <HandHelping className="size-4" />
+                              </button>
+                            </div>
                           )}
                         </div>
                       </td>
@@ -601,6 +679,24 @@ export default function RiwayatClient({
                 <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3 leading-relaxed">
                   {selectedReport.deskripsi}
                 </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-gray-800">Foto Bukti</span>
+                {selectedReport.evidenceImage ? (
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                    <img
+                      src={`/api/storage/${selectedReport.evidenceImage}`}
+                      alt="Bukti Laporan"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <ImageIcon className="size-6 text-gray-300 mb-1" />
+                    <span className="text-xs text-gray-400">Tidak ada foto bukti</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -758,6 +854,142 @@ export default function RiwayatClient({
                 </Button>
               }
             />
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Submit Bantuan Sheet (relawan only)                               */}
+      {/* ----------------------------------------------------------------- */}
+      <Sheet open={bantuanSheetOpen} onOpenChange={setBantuanSheetOpen}>
+        <SheetContent side="right">
+          <SheetHeader>
+            <SheetTitle className="text-base font-semibold text-[#0f374c]">
+              Submit Bantuan
+            </SheetTitle>
+            <SheetDescription>
+              Berikan informasi mengenai bantuan yang akan Anda berikan.
+            </SheetDescription>
+          </SheetHeader>
+
+          {selectedReport && (
+            <div className="flex flex-col gap-5 p-4 flex-1 overflow-y-auto">
+              {/* Report info */}
+              <div className="rounded-lg bg-gray-50 p-4 space-y-2 border border-gray-100">
+                <DetailRow label="Lokasi" value={selectedReport.lokasi} />
+                <DetailRow label="Kebutuhan" value={selectedReport.needsType} />
+                <div className="flex justify-between text-sm items-center">
+                  <span className="text-gray-500">Status</span>
+                  <StatusBadge status={selectedReport.status} />
+                </div>
+              </div>
+
+              {/* Form */}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-800">Jenis Bantuan</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(
+                      [
+                        { value: "Dana", icon: CreditCard },
+                        { value: "Jasa", icon: Wrench },
+                        { value: "Barang", icon: Box },
+                      ] as const
+                    ).map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => setJenisBantuan(item.value)}
+                        className={cn(
+                          "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all gap-1.5",
+                          jenisBantuan === item.value
+                            ? "border-[#2C869A] bg-[#2C869A]/5 text-[#2C869A]"
+                            : "border-gray-100 hover:border-gray-200 text-gray-400",
+                        )}
+                      >
+                        <item.icon className="size-5" />
+                        <span className="text-[11px] font-bold">{item.value}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-800">Keterangan Bantuan</label>
+                  <textarea
+                    value={bantuanKeterangan}
+                    onChange={(e) => setBantuanKeterangan(e.target.value)}
+                    placeholder="Contoh: Saya akan mengirimkan 5 paket sembako ke lokasi besok pagi."
+                    rows={4}
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all resize-none"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-800">
+                    Bukti / Foto (Opsional)
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                  />
+                  {uploadedFile ? (
+                    <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-gray-200 group">
+                      <img
+                        src={uploadedFile.previewUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={() => setUploadedFile(null)}
+                        className="absolute top-2 right-2 size-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      {isUploading ? (
+                        <Loader2 className="size-6 text-[#2C869A] animate-spin" />
+                      ) : (
+                        <>
+                          <Upload className="size-6 text-gray-400 mb-2" />
+                          <span className="text-xs text-gray-500">Pilih Foto Bukti</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <SheetFooter className="gap-2 sm:gap-0">
+            <SheetClose
+              render={
+                <Button variant="outline" className="rounded-lg flex-1 sm:flex-none">
+                  Batal
+                </Button>
+              }
+            />
+            <button
+              onClick={handleBantuanSubmit}
+              disabled={isPending || !bantuanKeterangan || bantuanKeterangan.length < 5}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+            >
+              {isPending ? "Mengirim..." : "Kirim Bantuan"}
+            </button>
           </SheetFooter>
         </SheetContent>
       </Sheet>

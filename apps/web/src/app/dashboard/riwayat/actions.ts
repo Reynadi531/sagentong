@@ -3,6 +3,7 @@
 import { auth } from "@sagentong/auth";
 import { db } from "@sagentong/db";
 import { laporan } from "@sagentong/db/schema/laporan";
+import { bantuanRelawan } from "@sagentong/db/schema/bantuan";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -41,6 +42,16 @@ async function requireSuperadmin() {
 
   if (session.user.role !== "superadmin") {
     throw new Error("Hanya superadmin yang dapat melakukan aksi ini.");
+  }
+
+  return session;
+}
+
+async function requireRelawan() {
+  const session = await requireSession();
+
+  if (session.user.role !== "relawan") {
+    throw new Error("Hanya relawan yang dapat melakukan aksi ini.");
   }
 
   return session;
@@ -118,6 +129,54 @@ export async function deleteReport(reportId: string): Promise<ActionResult> {
     return {
       success: false,
       message: error instanceof Error ? error.message : "Terjadi kesalahan saat menghapus laporan.",
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Submit bantuan (relawan only)
+// ---------------------------------------------------------------------------
+
+export async function submitBantuan(
+  laporanId: string,
+  data: {
+    jenisBantuan: string;
+    keterangan: string;
+    evidenceImage?: string | null;
+  },
+): Promise<ActionResult> {
+  try {
+    const session = await requireRelawan();
+
+    if (!data.keterangan || data.keterangan.length < 5) {
+      return { success: false, message: "Keterangan minimal 5 karakter." };
+    }
+
+    if (!data.jenisBantuan) {
+      return { success: false, message: "Jenis bantuan wajib dipilih." };
+    }
+
+    await db.insert(bantuanRelawan).values({
+      laporanId,
+      userId: session.user.id,
+      jenisBantuan: data.jenisBantuan,
+      keterangan: data.keterangan,
+      evidenceImage: data.evidenceImage,
+    });
+
+    revalidatePath("/dashboard/riwayat");
+    revalidatePath("/dashboard/bantuan");
+
+    return {
+      success: true,
+      message: "Berhasil mengirimkan bantuan. Terima kasih atas kontribusi Anda!",
+    };
+  } catch (error) {
+    console.error("[submitBantuan] Error:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Terjadi kesalahan saat mengirimkan bantuan.",
     };
   }
 }

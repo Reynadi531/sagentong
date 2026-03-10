@@ -11,6 +11,7 @@ import {
   Settings,
   Menu,
   ShieldUser,
+  Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,11 @@ const navItems = [
     icon: History,
   },
   {
+    title: "Daftar Bantuan",
+    href: "/dashboard/bantuan",
+    icon: Package,
+  },
+  {
     title: "Verifikasi Perangkat Desa",
     href: "/dashboard/verifikasi",
     icon: ShieldUser,
@@ -52,7 +58,7 @@ interface SidebarContentIProps {
 
 const exludedNavItemsForRoles: Record<"superadmin" | "relawan" | "perangkat_desa", string[]> = {
   superadmin: [],
-  relawan: ["/dashboard/verifikasi", "/dashboard/input-kebutuhan"],
+  relawan: ["/dashboard/verifikasi", "/dashboard/input-kebutuhan", "/dashboard/bantuan"],
   perangkat_desa: ["/dashboard/verifikasi"],
 };
 

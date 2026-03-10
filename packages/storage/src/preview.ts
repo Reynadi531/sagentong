@@ -1,4 +1,4 @@
-import { downloadFile } from "./download";
+import { downloadFileAsBuffer } from "./download";
 
 /** Image MIME types that should be served inline for preview. */
 const INLINE_CONTENT_TYPES = new Set([
@@ -53,9 +53,10 @@ export function createPreviewHandler(options?: PreviewHandlerOptions) {
 
       const key = keySegments.join("/");
 
-      const result = await downloadFile(key);
+      // Using buffer instead of stream for better compatibility with Next.js Response
+      const result = await downloadFileAsBuffer(key);
 
-      if (maxFileSize > 0 && result.size > maxFileSize) {
+      if (maxFileSize > 0 && result.buffer.length > maxFileSize) {
         return new Response(JSON.stringify({ error: "File too large for preview" }), {
           status: 413,
           headers: { "Content-Type": "application/json" },
@@ -67,11 +68,11 @@ export function createPreviewHandler(options?: PreviewHandlerOptions) {
         ? "inline"
         : `attachment; filename="${result.originalFilename ?? "download"}"`;
 
-      return new Response(result.stream, {
+      return new Response(result.buffer, {
         status: 200,
         headers: {
           "Content-Type": result.contentType,
-          "Content-Length": String(result.size),
+          "Content-Length": String(result.buffer.length),
           "Content-Disposition": disposition,
           "Cache-Control": `public, max-age=${maxAge}, immutable`,
           "X-Content-Type-Options": "nosniff",
@@ -92,10 +93,16 @@ export function createPreviewHandler(options?: PreviewHandlerOptions) {
       }
 
       console.error("[storage] Preview error:", error);
-      return new Response(JSON.stringify({ error: "Internal server error" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Internal server error",
+          message: process.env.NODE_ENV === "development" ? message : undefined,
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
   };
 }

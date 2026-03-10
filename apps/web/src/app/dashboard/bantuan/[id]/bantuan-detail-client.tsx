@@ -1,0 +1,204 @@
+"use client";
+
+import React, { useState } from "react";
+import { Calendar, User, MapPin, Package, ArrowLeft, ImageIcon, Phone } from "lucide-react";
+import Link from "next/link";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+
+interface BantuanItem {
+  id: string;
+  jenisBantuan: string;
+  keterangan: string;
+  evidenceImage: string | null;
+  relawanName: string;
+  relawanPhone: string | null;
+  tanggal: string;
+}
+
+interface ReportInfo {
+  id: string;
+  pelaporName: string;
+  lokasi: string;
+  kebutuhan: string;
+  status: string;
+  deskripsi: string;
+}
+
+export default function BantuanDetailClient({
+  report,
+  bantuan,
+}: {
+  report: ReportInfo;
+  bantuan: BantuanItem[];
+}) {
+  const formatDate = (isoString: string) => {
+    return new Date(isoString).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-8 max-w-[1200px] mx-auto w-full px-4 pb-12">
+      {/* Header & Back Action */}
+      <div className="flex flex-col gap-4">
+        <Link
+          href="/dashboard/bantuan"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#2C869A] transition-colors w-fit"
+        >
+          <ArrowLeft className="size-4" />
+          Kembali ke Daftar Bantuan
+        </Link>
+
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold text-[#0f374c]">Detail Bantuan Relawan</h1>
+          <p className="text-gray-500">
+            Berikut adalah rincian bantuan yang dikirimkan oleh relawan untuk laporan ini.
+          </p>
+        </div>
+      </div>
+
+      {/* Report Summary Card */}
+      <div className="w-full rounded-2xl bg-[#2C869A] p-6 text-white shadow-lg overflow-hidden relative">
+        <div className="absolute right-0 top-0 p-8 opacity-10">
+          <Package className="size-32" />
+        </div>
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="text-white/70 text-xs font-bold uppercase tracking-wider">
+              Laporan Utama
+            </span>
+            <h2 className="text-2xl font-bold">{report.kebutuhan}</h2>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+              <div className="flex items-center gap-1.5 text-sm">
+                <User className="size-4 text-white/70" />
+                {report.pelaporName}
+              </div>
+              <div className="flex items-center gap-1.5 text-sm">
+                <MapPin className="size-4 text-white/70" />
+                {report.lokasi}
+              </div>
+              <div className="px-2 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold">
+                {report.status}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:items-end gap-1">
+            <span className="text-white/70 text-xs font-bold uppercase tracking-wider">
+              Jumlah Kontribusi
+            </span>
+            <span className="text-4xl font-black">{bantuan.length}</span>
+            <span className="text-white/70 text-xs uppercase">Bantuan Diterima</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Assistance Items Grid */}
+      <div className="flex flex-col gap-6">
+        <h3 className="text-xl font-bold text-[#0f374c]">Daftar Kontribusi ({bantuan.length})</h3>
+
+        {bantuan.length === 0 ? (
+          <div className="py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center text-gray-400">
+            <Package className="size-12 mb-4 opacity-20" />
+            <p>Belum ada kontribusi bantuan untuk laporan ini.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {bantuan.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col bg-white rounded-3xl shadow-sm ring-1 ring-gray-100 overflow-hidden hover:shadow-md transition-all"
+              >
+                {/* Item Header */}
+                <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-full bg-[#2C869A]/10 flex items-center justify-center">
+                      <User className="size-5 text-[#2C869A]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-[#0f374c]">{item.relawanName}</span>
+                      <span className="text-[11px] text-gray-500">{formatDate(item.tanggal)}</span>
+                    </div>
+                  </div>
+                  <div className="px-3 py-1 rounded-lg bg-white border border-gray-100 text-[11px] font-bold text-[#2C869A] shadow-sm">
+                    {item.jenisBantuan}
+                  </div>
+                </div>
+
+                <div className="p-6 flex flex-col gap-6">
+                  {/* Item Description */}
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                      Keterangan
+                    </span>
+                    <p className="text-[14px] text-gray-700 leading-relaxed bg-[#F9FAFB] p-4 rounded-2xl border border-gray-50">
+                      {item.keterangan}
+                    </p>
+                  </div>
+
+                  {/* Item Evidence */}
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                      Bukti Foto
+                    </span>
+                    {item.evidenceImage ? (
+                      <Dialog>
+                        <DialogTrigger
+                          render={
+                            <button className="relative aspect-video w-full rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 group cursor-zoom-in outline-none">
+                              <img
+                                src={`/api/storage/${item.evidenceImage}`}
+                                alt="Bukti Bantuan"
+                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                                <ImageIcon className="size-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                            </button>
+                          }
+                        />
+                        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-transparent border-none">
+                          <DialogTitle className="sr-only">Bukti Bantuan Relawan</DialogTitle>
+                          <img
+                            src={`/api/storage/${item.evidenceImage}`}
+                            alt="Bukti Bantuan Full"
+                            className="w-full h-auto max-h-[90vh] object-contain"
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                        <ImageIcon className="size-8 text-gray-300 mb-2" />
+                        <span className="text-xs text-gray-400">Tidak ada foto bukti</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Relawan Contact (hidden if not admin/staff but page is already restricted) */}
+                  {item.relawanPhone && (
+                    <div className="mt-2 pt-4 border-t border-gray-50">
+                      <a
+                        href={`https://wa.me/${item.relawanPhone.replace(/\+/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-[13px] font-medium text-[#2C9A3D] hover:underline"
+                      >
+                        <Phone className="size-3.5" />
+                        Hubungi Relawan via WhatsApp
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
