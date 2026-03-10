@@ -49,7 +49,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # Environment variables are optional at build-time due to force-dynamic
-          # but can be passed here if ever needed for specific build steps.
-          build-args: |
-            NEXT_PUBLIC_AUTH_URL=https://placeholder.com

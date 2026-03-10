@@ -20,12 +20,10 @@ COPY turbo.json turbo.json
 
 # Build the project
 # Note: dynamic = 'force-dynamic' in layout.tsx allows these to be optional at build-time
-ARG NEXT_PUBLIC_AUTH_URL
-ARG DATABASE_URL
-ENV NEXT_PUBLIC_AUTH_URL=$NEXT_PUBLIC_AUTH_URL
-ENV DATABASE_URL=$DATABASE_URL
+# SKIP_ENV_VALIDATION=1 ensures the build doesn't fail due to missing env vars
+ENV SKIP_ENV_VALIDATION=1
 
-RUN bun run build
+RUN bun run build 
 
 # Stage 3: Runner - Final production image using Bun Alpine
 FROM oven/bun:1-alpine AS runner
