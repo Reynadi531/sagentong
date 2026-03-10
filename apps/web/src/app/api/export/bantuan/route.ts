@@ -21,16 +21,12 @@ export async function POST(request: Request) {
 
   try {
     const { reportId, location, needsType } = await request.json();
-
-    if (!reportId) {
-      return Response.json({ error: "Missing required data" }, { status: 400 });
-    }
-
     // Fetch all bantuan for this report
     const bantuanItems = await db
       .select({
         id: bantuanRelawan.id,
         jenisBantuan: bantuanRelawan.jenisBantuan,
+        danaAmount: bantuanRelawan.danaAmount,
         keterangan: bantuanRelawan.keterangan,
         createdAt: bantuanRelawan.createdAt,
         relawanName: user.name,
@@ -45,6 +41,7 @@ export async function POST(request: Request) {
       "Nama Relawan": item.relawanName,
       "Nomor WhatsApp": item.relawanPhone ?? "-",
       "Jenis Bantuan": item.jenisBantuan,
+      "Nominal Dana": item.danaAmount ?? 0,
       Keterangan: item.keterangan,
       Tanggal: item.createdAt.toLocaleDateString("id-ID", {
         day: "2-digit",
@@ -60,7 +57,14 @@ export async function POST(request: Request) {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Daftar Bantuan");
 
     // Adjust column widths
-    worksheet["!cols"] = [{ wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 50 }, { wch: 25 }];
+    worksheet["!cols"] = [
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 50 },
+      { wch: 25 },
+    ];
 
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
 

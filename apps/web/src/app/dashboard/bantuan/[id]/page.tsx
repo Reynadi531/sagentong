@@ -40,6 +40,7 @@ export default async function BantuanDetailPage({ params }: { params: Promise<{ 
     .select({
       id: bantuanRelawan.id,
       jenisBantuan: bantuanRelawan.jenisBantuan,
+      danaAmount: bantuanRelawan.danaAmount,
       keterangan: bantuanRelawan.keterangan,
       evidenceImage: bantuanRelawan.evidenceImage,
       createdAt: bantuanRelawan.createdAt,
@@ -54,6 +55,7 @@ export default async function BantuanDetailPage({ params }: { params: Promise<{ 
   const formattedBantuan = bantuanItems.map((b) => ({
     id: b.id,
     jenisBantuan: b.jenisBantuan,
+    danaAmount: b.danaAmount,
     keterangan: b.keterangan,
     evidenceImage: b.evidenceImage,
     relawanName: b.relawanName,

@@ -35,6 +35,7 @@ export default async function BantuanPage() {
       status: laporan.status,
       createdAt: laporan.createdAt,
       bantuanCount: sql<number>`count(${bantuanRelawan.id})::int`,
+      totalDana: sql<number>`sum(coalesce(${bantuanRelawan.danaAmount}, 0))::int`,
     })
     .from(laporan)
     .innerJoin(bantuanRelawan, eq(laporan.id, bantuanRelawan.laporanId))
@@ -49,6 +50,7 @@ export default async function BantuanPage() {
     status: r.status,
     tanggalLaporan: r.createdAt.toISOString(),
     jumlahBantuan: r.bantuanCount,
+    totalDana: r.totalDana,
   }));
 
   return <BantuanListClient reports={formattedData} />;

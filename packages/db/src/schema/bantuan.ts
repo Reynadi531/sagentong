@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { laporan } from "./laporan";
 
@@ -11,6 +11,7 @@ export const bantuanRelawan = pgTable("bantuan_relawan", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   jenisBantuan: text("jenis_bantuan").notNull(), // 'Dana', 'Jasa', 'Barang'
+  danaAmount: integer("dana_amount"),
   keterangan: text("keterangan").notNull(),
   evidenceImage: text("evidence_image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

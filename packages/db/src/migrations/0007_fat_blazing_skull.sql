@@ -1,0 +1,1 @@
+ALTER TABLE "bantuan_relawan" ADD COLUMN "dana_amount" integer;

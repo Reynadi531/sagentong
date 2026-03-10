@@ -12,6 +12,7 @@ interface ReportWithBantuanCount {
   status: string;
   tanggalLaporan: string;
   jumlahBantuan: number;
+  totalDana: number;
 }
 
 export default function BantuanListClient({ reports }: { reports: ReportWithBantuanCount[] }) {
@@ -30,6 +31,14 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
       month: "short",
       year: "numeric",
     });
+  };
+
+  const formatRupiah = (amount: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
@@ -52,6 +61,7 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
                 <th className="pb-4 px-4 font-medium">Lokasi</th>
                 <th className="pb-4 px-4 font-medium">Status Laporan</th>
                 <th className="pb-4 px-4 font-medium text-center">Jumlah Bantuan</th>
+                <th className="pb-4 px-4 font-medium text-right">Total Dana</th>
                 <th className="pb-4 px-4 font-medium">Terakhir Diperbarui</th>
                 <th className="pb-4 text-center font-medium">Aksi</th>
               </tr>
@@ -59,7 +69,7 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
             <tbody className="divide-y divide-gray-50">
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-gray-400">
+                  <td colSpan={7} className="py-12 text-center text-gray-400">
                     Belum ada bantuan yang masuk untuk laporan manapun.
                   </td>
                 </tr>
@@ -87,6 +97,9 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
                       <div className="inline-flex items-center justify-center min-w-8 h-8 px-2 rounded-lg bg-[#2C869A]/10 text-[#2C869A] font-bold">
                         {item.jumlahBantuan}
                       </div>
+                    </td>
+                    <td className="py-4 px-4 text-right font-bold text-[#2C9A3D]">
+                      {item.totalDana > 0 ? formatRupiah(item.totalDana) : "-"}
                     </td>
                     <td className="py-4 px-4 text-gray-500">
                       <div className="flex items-center gap-1.5">

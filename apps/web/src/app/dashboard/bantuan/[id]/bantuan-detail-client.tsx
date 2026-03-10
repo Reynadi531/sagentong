@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/
 interface BantuanItem {
   id: string;
   jenisBantuan: string;
+  danaAmount: number | null;
   keterangan: string;
   evidenceImage: string | null;
   relawanName: string;
@@ -52,6 +53,14 @@ export default function BantuanDetailClient({
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatRupiah = (amount: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
   };
 
   const handleExportExcel = async () => {
@@ -154,10 +163,12 @@ export default function BantuanDetailClient({
 
           <div className="flex flex-col md:items-end gap-1">
             <span className="text-white/70 text-xs font-bold uppercase tracking-wider">
-              Jumlah Kontribusi
+              Total Dana
             </span>
-            <span className="text-4xl font-black">{bantuan.length}</span>
-            <span className="text-white/70 text-xs uppercase">Bantuan Diterima</span>
+            <span className="text-2xl font-black">
+              {formatRupiah(bantuan.reduce((acc, curr) => acc + (curr.danaAmount ?? 0), 0))}
+            </span>
+            <span className="text-white/70 text-xs uppercase">{bantuan.length} Kontribusi</span>
           </div>
         </div>
       </div>
@@ -189,8 +200,15 @@ export default function BantuanDetailClient({
                       <span className="text-[11px] text-gray-500">{formatDate(item.tanggal)}</span>
                     </div>
                   </div>
-                  <div className="px-3 py-1 rounded-lg bg-white border border-gray-100 text-[11px] font-bold text-[#2C869A] shadow-sm">
-                    {item.jenisBantuan}
+                  <div className="flex items-center gap-2">
+                    {item.jenisBantuan === "Dana" && item.danaAmount && (
+                      <div className="px-3 py-1 rounded-lg bg-[#2C9A3D]/10 text-[11px] font-bold text-[#2C9A3D]">
+                        {formatRupiah(item.danaAmount)}
+                      </div>
+                    )}
+                    <div className="px-3 py-1 rounded-lg bg-white border border-gray-100 text-[11px] font-bold text-[#2C869A] shadow-sm">
+                      {item.jenisBantuan}
+                    </div>
                   </div>
                 </div>
 

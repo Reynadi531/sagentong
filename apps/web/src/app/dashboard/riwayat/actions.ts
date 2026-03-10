@@ -142,24 +142,36 @@ export async function submitBantuan(
   data: {
     jenisBantuan: string;
     keterangan: string;
+    danaAmount?: number | null;
     evidenceImage?: string | null;
   },
 ): Promise<ActionResult> {
   try {
     const session = await requireRelawan();
 
+    if (!data.jenisBantuan) {
+      return { success: false, message: "Jenis bantuan wajib dipilih." };
+    }
+
     if (!data.keterangan || data.keterangan.length < 5) {
       return { success: false, message: "Keterangan minimal 5 karakter." };
     }
 
-    if (!data.jenisBantuan) {
-      return { success: false, message: "Jenis bantuan wajib dipilih." };
+    // Validation for Dana category
+    if (data.jenisBantuan === "Dana") {
+      if (!data.danaAmount || data.danaAmount <= 0) {
+        return { success: false, message: "Nominal dana harus lebih dari 0." };
+      }
+      if (!data.evidenceImage) {
+        return { success: false, message: "Bukti transfer wajib diunggah untuk bantuan dana." };
+      }
     }
 
     await db.insert(bantuanRelawan).values({
       laporanId,
       userId: session.user.id,
       jenisBantuan: data.jenisBantuan,
+      danaAmount: data.danaAmount,
       keterangan: data.keterangan,
       evidenceImage: data.evidenceImage,
     });

@@ -205,6 +205,7 @@ export default function RiwayatClient({
   const [newStatus, setNewStatus] = useState<ReportStatus>("Menunggu");
   const [waMessage, setWaMessage] = useState("");
   const [bantuanKeterangan, setBantuanKeterangan] = useState("");
+  const [danaAmount, setDanaAmount] = useState<string>("");
   const [jenisBantuan, setJenisBantuan] = useState<string>("Dana");
   const [isPending, startTransition] = useTransition();
 
@@ -286,6 +287,7 @@ export default function RiwayatClient({
   const handleOpenBantuanSheet = (report: ReportData) => {
     setSelectedReport(report);
     setBantuanKeterangan("");
+    setDanaAmount("");
     setJenisBantuan("Dana");
     setUploadedFile(null);
     setBantuanSheetOpen(true);
@@ -342,10 +344,23 @@ export default function RiwayatClient({
       return;
     }
 
+    if (jenisBantuan === "Dana") {
+      const amount = parseInt(danaAmount);
+      if (isNaN(amount) || amount <= 0) {
+        toast.error("Nominal dana harus lebih dari 0.");
+        return;
+      }
+      if (!uploadedFile) {
+        toast.error("Bukti transfer wajib diunggah untuk bantuan dana.");
+        return;
+      }
+    }
+
     startTransition(async () => {
       const result = await submitBantuan(selectedReport.id, {
         keterangan: bantuanKeterangan,
         jenisBantuan,
+        danaAmount: jenisBantuan === "Dana" ? parseInt(danaAmount) : null,
         evidenceImage: uploadedFile?.key,
       });
       if (result.success) {
@@ -969,6 +984,24 @@ export default function RiwayatClient({
                   </div>
                 </div>
 
+                {jenisBantuan === "Dana" && (
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-gray-800">Nominal Dana (Rp)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={danaAmount}
+                        onChange={(e) => setDanaAmount(e.target.value)}
+                        placeholder="Contoh: 500000"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all"
+                      />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">
+                        Rp
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-gray-800">Keterangan Bantuan</label>
                   <textarea
@@ -982,7 +1015,7 @@ export default function RiwayatClient({
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-gray-800">
-                    Bukti / Foto (Opsional)
+                    {jenisBantuan === "Dana" ? "Bukti Transfer (Wajib)" : "Bukti / Foto (Opsional)"}
                   </label>
                   <input
                     ref={fileInputRef}
@@ -1041,7 +1074,7 @@ export default function RiwayatClient({
             <button
               onClick={handleBantuanSubmit}
               disabled={isPending || !bantuanKeterangan || bantuanKeterangan.length < 5}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+              className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#2C869A] hover:bg-[#236e7f] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
             >
               {isPending ? "Mengirim..." : "Kirim Bantuan"}
             </button>
