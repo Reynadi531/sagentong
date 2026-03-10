@@ -1,4 +1,7 @@
 import { auth } from "@sagentong/auth";
+import { db } from "@sagentong/db";
+import { laporan } from "@sagentong/db/schema/laporan";
+import { count, eq, gte, or, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -20,40 +23,48 @@ export default async function DashboardPage() {
     redirect("/dashboard/pending" as any);
   }
 
-  // --- Dummy Data (Since db seed depends on env vars context) ---
+  // --- Stats from DB ---
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const [totalResult, unprocessedResult, toAdminResult, recentRows] = await Promise.all([
+    db.select({ value: count() }).from(laporan).where(gte(laporan.createdAt, todayStart)),
+    db.select({ value: count() }).from(laporan).where(eq(laporan.status, "Menunggu")),
+    db
+      .select({ value: count() })
+      .from(laporan)
+      .where(or(eq(laporan.status, "Diverifikasi"), eq(laporan.status, "Diproses"))),
+    db
+      .select({
+        id: laporan.id,
+        rw: laporan.rw,
+        rt: laporan.rt,
+        assistanceCategory: laporan.assistanceCategory,
+        description: laporan.description,
+        status: laporan.status,
+        createdAt: laporan.createdAt,
+      })
+      .from(laporan)
+      .orderBy(desc(laporan.createdAt))
+      .limit(3),
+  ]);
+
   const stats = {
-    total: 24,
-    unprocessed: 8,
-    toAdmin: 16,
+    total: totalResult[0]?.value ?? 0,
+    unprocessed: unprocessedResult[0]?.value ?? 0,
+    toAdmin: toAdminResult[0]?.value ?? 0,
   };
 
-  const dummyReports: Report[] = [
-    {
-      id: "1",
-      tanggal: new Date("2026-03-03"),
-      lokasi: "RW 02 RT 05",
-      jenisBantuan: "Bantuan Dana",
-      deskripsi: "Bantuan Sembako untuk warga terdampak banjir.",
-      status: "Menunggu",
-    },
-    {
-      id: "2",
-      tanggal: new Date("2026-03-03"),
-      lokasi: "RW 01 RT 03",
-      jenisBantuan: "Bantuan Jasa",
-      deskripsi: "Perbaikan Jalan akses utama RW 01 terputus.",
-      status: "Diverifikasi",
-    },
-    {
-      id: "3",
-      tanggal: new Date("2026-03-07"),
-      lokasi: "RW 03 RT 01",
-      jenisBantuan: "Bantuan Barang",
-      deskripsi: "Bantuan Kesehatan untuk warga gatal-gatal.",
-      status: "Diproses",
-    },
-  ];
+  const recentReports: Report[] = recentRows.map((r) => ({
+    id: r.id,
+    tanggal: r.createdAt,
+    lokasi: `RW ${r.rw} RT ${r.rt}`,
+    jenisBantuan: r.assistanceCategory ? `Bantuan ${r.assistanceCategory}` : "Tidak Diketahui",
+    deskripsi: r.description,
+    status: r.status as Report["status"],
+  }));
 
+  // --- Dummy data (kept for sections not yet wired to DB) ---
   const popularNeeds = [
     { name: "Bantuan Sembako", percentage: 58, count: 14 },
     { name: "Perbaikan Infrastruktur", percentage: 35, count: 8 },
@@ -99,7 +110,7 @@ export default async function DashboardPage() {
               <span className="text-xl leading-none">+</span> Tambahkan Laporan
             </Link>
           </div>
-          <RecentReportsTable reports={dummyReports} />
+          <RecentReportsTable reports={recentReports} />
         </div>
 
         {/* Right Column: Side Panels */}
