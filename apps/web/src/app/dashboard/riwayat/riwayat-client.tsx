@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Send,
   Eye,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -31,13 +32,13 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { updateReportStatus } from "./actions";
+import { updateReportStatus, deleteReport } from "./actions";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type ReportStatus = "Menunggu" | "Diverifikasi" | "Diproses";
+type ReportStatus = "Menunggu" | "Diverifikasi" | "Diproses" | "Selesai";
 
 export interface ReportData {
   id: string;
@@ -84,6 +85,11 @@ const statusStyles: Record<ReportStatus, { bg: string; text: string; dot: string
     bg: "bg-[#2C9A3D]/10",
     text: "text-[#2C9A3D]",
     dot: "bg-[#2C9A3D]",
+  },
+  Selesai: {
+    bg: "bg-blue-100",
+    text: "text-blue-600",
+    dot: "bg-blue-600",
   },
 };
 
@@ -280,6 +286,25 @@ export default function RiwayatClient({
     });
   };
 
+  const handleDeleteReport = (reportId: string) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus laporan ini?")) return;
+
+    // Optimistic update
+    setReports((prev) => prev.filter((r) => r.id !== reportId));
+
+    startTransition(async () => {
+      const result = await deleteReport(reportId);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        // We can't easily restore deleted item without re-fetching,
+        // but for simplicity we'll just show error
+        toast.error(result.message);
+        // Best practice would be to re-fetch data or use SWR/React Query
+      }
+    });
+  };
+
   const handleSendWhatsApp = (phoneNumber: string) => {
     const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(phoneNumber)}&text=${encodeURIComponent(waMessage)}`;
     window.open(url, "_blank");
@@ -349,6 +374,7 @@ export default function RiwayatClient({
                 <option value="Menunggu">Menunggu</option>
                 <option value="Diverifikasi">Diverifikasi</option>
                 <option value="Diproses">Diproses</option>
+                <option value="Selesai">Selesai</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
             </div>
@@ -479,6 +505,18 @@ export default function RiwayatClient({
                                   <Send className="size-4" />
                                   Broadcast WhatsApp
                                 </DropdownMenuItem>
+                                {userRole === "superadmin" && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      className="gap-2 rounded-md px-3 py-2 text-sm cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                                      onClick={() => handleDeleteReport(report.id)}
+                                    >
+                                      <Trash2 className="size-4" />
+                                      Hapus Laporan
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           ) : (
@@ -614,6 +652,7 @@ export default function RiwayatClient({
                     <option value="Menunggu">Menunggu</option>
                     <option value="Diverifikasi">Diverifikasi</option>
                     <option value="Diproses">Diproses</option>
+                    <option value="Selesai">Selesai</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
                 </div>

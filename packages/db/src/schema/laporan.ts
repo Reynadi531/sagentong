@@ -15,7 +15,7 @@ export const laporan = pgTable("laporan", {
   assistanceCategory: text("assistance_category"), // General category like 'Dana', 'Jasa', 'Barang'
   description: text("description").notNull(),
   evidenceImage: text("evidence_image"),
-  status: text("status").notNull().default("Menunggu"), // 'Menunggu', 'Diverifikasi', 'Diproses'
+  status: text("status").notNull().default("Menunggu"), // 'Menunggu', 'Diverifikasi', 'Diproses', 'Selesai'
   perangkatDesaId: text("perangkat_desa_id").references(() => user.id, { onDelete: "set null" }), // User who verified/manages this
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

@@ -12,16 +12,14 @@ import {
   Cell,
 } from "recharts";
 
-const data = [
-  { name: "RW 01", value: 25 },
-  { name: "RW 02", value: 30 },
-  { name: "RW 03", value: 45 },
-  { name: "RW 04", value: 20 },
-  { name: "RW 05", value: 35 },
-  { name: "RW 06", value: 15 },
-];
+interface WilayahBarChartProps {
+  data: { name: string; value: number }[];
+}
 
-export default function WilayahBarChart() {
+export default function WilayahBarChart({ data }: WilayahBarChartProps) {
+  // Find max value to highlight it
+  const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.value)) : 0;
+
   return (
     <div className="h-[300px] w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
       <h3 className="mb-6 text-[17px] font-semibold text-[#0f374c]">
@@ -55,7 +53,10 @@ export default function WilayahBarChart() {
             />
             <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.name === "RW 03" ? "#2C869A" : "#DDEBEE"} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.value === maxValue && maxValue > 0 ? "#2C869A" : "#DDEBEE"}
+                />
               ))}
             </Bar>
           </BarChart>

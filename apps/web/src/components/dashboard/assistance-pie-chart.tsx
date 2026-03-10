@@ -3,15 +3,13 @@
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
-const data = [
-  { name: "Bantuan Dana", value: 45 },
-  { name: "Bantuan Barang", value: 35 },
-  { name: "Bantuan Relawan", value: 20 },
-];
+interface AssistancePieChartProps {
+  data: { name: string; value: number }[];
+}
 
-const COLORS = ["#2C869A", "#FFA918", "#2C9A3D"];
+const COLORS = ["#2C869A", "#FFA918", "#2C9A3D", "#9ca3af"];
 
-export default function AssistancePieChart() {
+export default function AssistancePieChart({ data }: AssistancePieChartProps) {
   return (
     <div className="h-[300px] w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
       <h3 className="mb-6 text-[17px] font-semibold text-[#0f374c]">Distribusi Jenis Bantuan</h3>

@@ -27,13 +27,27 @@ export default async function DashboardPage() {
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
-  const [totalResult, unprocessedResult, toAdminResult, recentRows] = await Promise.all([
+  const [
+    totalResult,
+    unprocessedResult,
+    toAdminResult,
+    recentRows,
+    needsResult,
+    activityRows,
+    allReportsCountResult,
+  ] = await Promise.all([
     db.select({ value: count() }).from(laporan).where(gte(laporan.createdAt, todayStart)),
     db.select({ value: count() }).from(laporan).where(eq(laporan.status, "Menunggu")),
     db
       .select({ value: count() })
       .from(laporan)
-      .where(or(eq(laporan.status, "Diverifikasi"), eq(laporan.status, "Diproses"))),
+      .where(
+        or(
+          eq(laporan.status, "Diverifikasi"),
+          eq(laporan.status, "Diproses"),
+          eq(laporan.status, "Selesai"),
+        ),
+      ),
     db
       .select({
         id: laporan.id,
@@ -47,6 +61,25 @@ export default async function DashboardPage() {
       .from(laporan)
       .orderBy(desc(laporan.createdAt))
       .limit(3),
+    db
+      .select({ name: laporan.needsType, count: count() })
+      .from(laporan)
+      .groupBy(laporan.needsType)
+      .orderBy(desc(count()))
+      .limit(3),
+    db
+      .select({
+        id: laporan.id,
+        pelaporName: laporan.pelaporName,
+        needsType: laporan.needsType,
+        status: laporan.status,
+        updatedAt: laporan.updatedAt,
+        createdAt: laporan.createdAt,
+      })
+      .from(laporan)
+      .orderBy(desc(laporan.updatedAt))
+      .limit(3),
+    db.select({ value: count() }).from(laporan),
   ]);
 
   const stats = {
@@ -54,6 +87,8 @@ export default async function DashboardPage() {
     unprocessed: unprocessedResult[0]?.value ?? 0,
     toAdmin: toAdminResult[0]?.value ?? 0,
   };
+
+  const totalAllTime = allReportsCountResult[0]?.value ?? 0;
 
   const recentReports: Report[] = recentRows.map((r) => ({
     id: r.id,
@@ -64,30 +99,44 @@ export default async function DashboardPage() {
     status: r.status as Report["status"],
   }));
 
-  // --- Dummy data (kept for sections not yet wired to DB) ---
-  const popularNeeds = [
-    { name: "Bantuan Sembako", percentage: 58, count: 14 },
-    { name: "Perbaikan Infrastruktur", percentage: 35, count: 8 },
-    { name: "Bantuan Kesehatan", percentage: 22, count: 5 },
-  ];
+  // --- Real data for widgets ---
+  const popularNeeds = needsResult.map((n) => ({
+    name: n.name,
+    count: n.count,
+    percentage: totalAllTime > 0 ? Math.round((n.count / totalAllTime) * 100) : 0,
+  }));
 
-  const recentActivities: Activity[] = [
-    {
-      id: "1",
-      action: "Laporan Bantuan Sembako (RW 02) baru saja ditambahkan oleh Budi Santoso.",
-      timeAgo: "2 menit yang lalu",
-    },
-    {
-      id: "2",
-      action: "Laporan Perbaikan Jalan (RW 01) telah diverifikasi.",
-      timeAgo: "1 jam yang lalu",
-    },
-    {
-      id: "3",
-      action: "Laporan Bantuan Kesehatan sedang diproses oleh tim medis relawan.",
-      timeAgo: "3 jam yang lalu",
-    },
-  ];
+  function formatTimeAgo(date: Date) {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " tahun lalu";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " bulan lalu";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " hari lalu";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " jam lalu";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " menit lalu";
+    return "Baru saja";
+  }
+
+  const recentActivities: Activity[] = activityRows.map((a) => {
+    const isNew = a.createdAt.getTime() === a.updatedAt.getTime();
+    let action = "";
+
+    if (isNew) {
+      action = `Laporan ${a.needsType} ditambahkan oleh ${a.pelaporName}.`;
+    } else {
+      action = `Laporan ${a.needsType} untuk ${a.pelaporName} status berubah menjadi ${a.status}.`;
+    }
+
+    return {
+      id: a.id,
+      action,
+      timeAgo: formatTimeAgo(a.updatedAt),
+    };
+  });
 
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] mx-auto w-full">

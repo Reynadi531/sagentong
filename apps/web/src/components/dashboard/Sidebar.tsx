@@ -52,7 +52,7 @@ interface SidebarContentIProps {
 
 const exludedNavItemsForRoles: Record<"superadmin" | "relawan" | "perangkat_desa", string[]> = {
   superadmin: [],
-  relawan: ["/dashboard/verifikasi"],
+  relawan: ["/dashboard/verifikasi", "/dashboard/input-kebutuhan"],
   perangkat_desa: ["/dashboard/verifikasi"],
 };
 

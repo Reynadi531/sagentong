@@ -12,7 +12,7 @@ import { z } from "zod";
 // Shared helpers
 // ---------------------------------------------------------------------------
 
-const VALID_STATUSES = ["Menunggu", "Diverifikasi", "Diproses"] as const;
+const VALID_STATUSES = ["Menunggu", "Diverifikasi", "Diproses", "Selesai"] as const;
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -31,6 +31,16 @@ async function requireAdmin() {
 
   if (session.user.role !== "perangkat_desa" && session.user.role !== "superadmin") {
     throw new Error("Hanya perangkat desa dan superadmin yang dapat melakukan aksi ini.");
+  }
+
+  return session;
+}
+
+async function requireSuperadmin() {
+  const session = await requireSession();
+
+  if (session.user.role !== "superadmin") {
+    throw new Error("Hanya superadmin yang dapat melakukan aksi ini.");
   }
 
   return session;
@@ -84,6 +94,30 @@ export async function updateReportStatus(
       success: false,
       message:
         error instanceof Error ? error.message : "Terjadi kesalahan saat mengubah status laporan.",
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Delete report (superadmin only)
+// ---------------------------------------------------------------------------
+
+export async function deleteReport(reportId: string): Promise<ActionResult> {
+  try {
+    await requireSuperadmin();
+
+    await db.delete(laporan).where(eq(laporan.id, reportId));
+
+    revalidatePath("/dashboard/riwayat");
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/statistik");
+
+    return { success: true, message: "Laporan berhasil dihapus." };
+  } catch (error) {
+    console.error("[deleteReport] Error:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Terjadi kesalahan saat menghapus laporan.",
     };
   }
 }

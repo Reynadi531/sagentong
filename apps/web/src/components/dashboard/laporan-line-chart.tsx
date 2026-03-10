@@ -11,17 +11,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "Senin", value: 15 },
-  { name: "Selasa", value: 40 },
-  { name: "Rabu", value: 35 },
-  { name: "Kamis", value: 65 },
-  { name: "Jumat", value: 45 },
-  { name: "Sabtu", value: 50 },
-  { name: "Minggu", value: 55 },
-];
+interface LaporanLineChartProps {
+  data: { name: string; value: number }[];
+}
 
-export default function LaporanLineChart() {
+export default function LaporanLineChart({ data }: LaporanLineChartProps) {
   return (
     <div className="h-[300px] w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
       <h3 className="mb-6 text-[17px] font-semibold text-[#0f374c]">
