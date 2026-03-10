@@ -1,8 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, User, MapPin, Package, ArrowLeft, ImageIcon, Phone } from "lucide-react";
+import {
+  Calendar,
+  User,
+  MapPin,
+  Package,
+  ArrowLeft,
+  ImageIcon,
+  Phone,
+  Download,
+  Loader2,
+} from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 interface BantuanItem {
@@ -31,6 +42,8 @@ export default function BantuanDetailClient({
   report: ReportInfo;
   bantuan: BantuanItem[];
 }) {
+  const [isExporting, setIsExporting] = useState(false);
+
   const formatDate = (isoString: string) => {
     return new Date(isoString).toLocaleDateString("id-ID", {
       day: "2-digit",
@@ -41,24 +54,75 @@ export default function BantuanDetailClient({
     });
   };
 
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const response = await fetch("/api/export/bantuan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportId: report.id,
+          location: report.lokasi,
+          needsType: report.kebutuhan,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengekspor data");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Daftar_Bantuan_${report.lokasi.replace(/\s+/g, "_")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success("Laporan berhasil diunduh.");
+    } catch (error) {
+      console.error("[export] Error:", error);
+      toast.error("Terjadi kesalahan saat mengunduh laporan.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8 max-w-[1200px] mx-auto w-full px-4 pb-12">
       {/* Header & Back Action */}
-      <div className="flex flex-col gap-4">
-        <Link
-          href="/dashboard/bantuan"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#2C869A] transition-colors w-fit"
-        >
-          <ArrowLeft className="size-4" />
-          Kembali ke Daftar Bantuan
-        </Link>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="flex flex-col gap-4">
+          <Link
+            href="/dashboard/bantuan"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#2C869A] transition-colors w-fit"
+          >
+            <ArrowLeft className="size-4" />
+            Kembali ke Daftar Bantuan
+          </Link>
 
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-[#0f374c]">Detail Bantuan Relawan</h1>
-          <p className="text-gray-500">
-            Berikut adalah rincian bantuan yang dikirimkan oleh relawan untuk laporan ini.
-          </p>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold text-[#0f374c]">Detail Bantuan Relawan</h1>
+            <p className="text-gray-500">
+              Berikut adalah rincian bantuan yang dikirimkan oleh relawan untuk laporan ini.
+            </p>
+          </div>
         </div>
+
+        <button
+          onClick={handleExportExcel}
+          disabled={isExporting || bantuan.length === 0}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-200 hover:border-[#2C869A] hover:text-[#2C869A] text-gray-600 text-sm font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed h-fit"
+        >
+          {isExporting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Download className="size-4" />
+          )}
+          Unduh Laporan Excel
+        </button>
       </div>
 
       {/* Report Summary Card */}

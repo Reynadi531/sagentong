@@ -19,6 +19,7 @@ import {
   CreditCard,
   Wrench,
   Box,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -379,6 +380,41 @@ export default function RiwayatClient({
   const handleSendWhatsApp = (phoneNumber: string) => {
     const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(phoneNumber)}&text=${encodeURIComponent(waMessage)}`;
     window.open(url, "_blank");
+  };
+
+  const handleExportExcel = async () => {
+    if (!selectedReport) return;
+
+    try {
+      const response = await fetch("/api/export/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportId: selectedReport.id,
+          location: selectedReport.lokasi,
+          waMessage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengekspor data");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Broadcast_Relawan_${selectedReport.lokasi.replace(/\s+/g, "_")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success("Data berhasil diekspor ke Excel.");
+    } catch (error) {
+      console.error("[export] Error:", error);
+      toast.error("Terjadi kesalahan saat mengekspor data.");
+    }
   };
 
   // Show action column for admin and relawan (both have actions now)
@@ -792,7 +828,18 @@ export default function RiwayatClient({
             <SheetTitle className="text-base font-semibold text-[#0f374c]">
               Broadcast WhatsApp
             </SheetTitle>
-            <SheetDescription>Kirim informasi laporan ini kepada para relawan.</SheetDescription>
+            <div className="flex items-center justify-between mt-1">
+              <SheetDescription className="text-xs">
+                Kirim informasi laporan ini kepada para relawan.
+              </SheetDescription>
+              <button
+                onClick={handleExportExcel}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-[11px] font-bold rounded-lg transition-colors border border-green-200 shrink-0"
+              >
+                <Download className="size-3" />
+                Ekspor Excel
+              </button>
+            </div>
           </SheetHeader>
 
           {selectedReport && (
