@@ -178,6 +178,8 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
         description: z.string().min(1, "Deskripsi kondisi wajib diisi"),
         needsType: z.string().min(1, "Jenis kebutuhan wajib diisi"),
         assistanceCategory: z.enum(["Dana", "Jasa", "Barang"]),
+        latitude: z.string(),
+        longitude: z.string(),
       }),
     },
   });

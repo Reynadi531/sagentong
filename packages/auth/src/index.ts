@@ -111,15 +111,95 @@ function buildVerificationEmailHtml(userName: string, verifyUrl: string): string
 </html>`.trim();
 }
 
+function buildResetPasswordEmailHtml(userName: string, resetUrl: string): string {
+  return `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atur Ulang Kata Sandi - SaGentong</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f5f4;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f5f4;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(44,134,154,0.08);">
+          <!-- Header bar -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #2c869a 0%, #1f5f6e 100%);padding:32px 36px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.5px;">SaGentong</h1>
+              <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:13px;font-weight:300;letter-spacing:0.5px;">Langkah Cepat, Aksi Tepat!</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 36px 20px;">
+              <p style="margin:0 0 8px;color:#0f374c;font-size:18px;font-weight:600;">Halo, ${userName}!</p>
+              <p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.7;">
+                Anda menerima email ini karena kami menerima permintaan atur ulang kata sandi untuk akun Anda. Jika Anda tidak melakukan permintaan ini, abaikan saja email ini.
+              </p>
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding:8px 0 28px;">
+                    <a href="${resetUrl}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#2c869a 0%,#1f5f6e 100%);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:12px;letter-spacing:0.3px;">
+                      Atur Ulang Kata Sandi
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 20px;color:#94a3b8;font-size:12px;line-height:1.6;">
+                Jika tombol di atas tidak berfungsi, salin dan tempel link berikut ke browser Anda:
+              </p>
+              <p style="margin:0 0 28px;word-break:break-all;color:#2c869a;font-size:12px;line-height:1.5;background:#f0f9fb;padding:12px 16px;border-radius:10px;border:1px solid #e0f2f6;">
+                ${resetUrl}
+              </p>
+              <!-- Divider -->
+              <hr style="border:none;border-top:1px solid #e8eef0;margin:0 0 20px;" />
+              <p style="margin:0;color:#94a3b8;font-size:11px;line-height:1.6;text-align:center;">
+                Link ini akan kedaluwarsa dalam 1 jam demi keamanan akun Anda.
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f8fafb;padding:20px 36px;text-align:center;border-top:1px solid #e8eef0;">
+              <p style="margin:0;color:#94a3b8;font-size:11px;">&copy; ${new Date().getFullYear()} SaGentong. Seluruh hak dilindungi.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`.trim();
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
   }),
+  baseURL: env.BETTER_AUTH_URL,
   trustedOrigins: [env.CORS_ORIGIN],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      try {
+        await transporter.sendMail({
+          from: `"SaGentong" <${env.SMTP_FROM}>`,
+          to: user.email,
+          subject: "Atur Ulang Kata Sandi - SaGentong",
+          html: buildResetPasswordEmailHtml(user.name, url),
+        });
+        console.log(`[Auth] Reset password email sent to ${user.email}`);
+      } catch (error) {
+        console.error(`[Auth] Failed to send reset password email to ${user.email}:`, error);
+        throw error;
+      }
+    },
     customSyntheticUser: ({ coreFields, additionalFields, id }) => ({
       ...coreFields,
       ...additionalFields,
@@ -130,14 +210,18 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      // Only send verification emails to relawan users
-      // perangkat_desa and superadmin are auto-verified on creation
-      void transporter.sendMail({
-        from: `"SaGentong" <${env.SMTP_FROM}>`,
-        to: user.email,
-        subject: "Verifikasi Email Anda - SaGentong",
-        html: buildVerificationEmailHtml(user.name, url),
-      });
+      try {
+        await transporter.sendMail({
+          from: `"SaGentong" <${env.SMTP_FROM}>`,
+          to: user.email,
+          subject: "Verifikasi Email Anda - SaGentong",
+          html: buildVerificationEmailHtml(user.name, url),
+        });
+        console.log(`[Auth] Verification email sent to ${user.email}`);
+      } catch (error) {
+        console.error(`[Auth] Failed to send verification email to ${user.email}:`, error);
+        throw error;
+      }
     },
   },
   user: {

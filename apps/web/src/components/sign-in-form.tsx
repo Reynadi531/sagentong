@@ -19,17 +19,23 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
   const [emailNotVerified, setEmailNotVerified] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [isSendingReset, setIsSendingReset] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
+      rememberMe: false,
     },
     onSubmit: async ({ value }) => {
       await authClient.signIn.email(
         {
           email: value.email,
           password: value.password,
+          rememberMe: value.rememberMe,
         },
         {
           onSuccess: () => {
@@ -50,8 +56,9 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
     },
     validators: {
       onSubmit: z.object({
-        email: z.email("Format email tidak valid"),
+        email: z.string().email("Format email tidak valid"),
         password: z.string().min(8, "Password minimal 8 karakter"),
+        rememberMe: z.boolean(),
       }),
     },
   });
@@ -80,6 +87,33 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
       startResendCooldown();
     } catch {
       toast.error("Gagal mengirim ulang email verifikasi.");
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotPasswordEmail || !z.string().email().safeParse(forgotPasswordEmail).success) {
+      toast.error("Masukkan email yang valid");
+      return;
+    }
+
+    setIsSendingReset(true);
+    try {
+      const { error } = await authClient.requestPasswordReset({
+        email: forgotPasswordEmail,
+        redirectTo: "/reset-password",
+      });
+
+      if (error) {
+        toast.error(error.message || "Gagal mengirim email reset password");
+      } else {
+        setResetEmailSent(true);
+        toast.success("Email reset password telah dikirim.");
+      }
+    } catch {
+      toast.error("Terjadi kesalahan sistem.");
+    } finally {
+      setIsSendingReset(false);
     }
   };
 
@@ -139,6 +173,91 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
             Kembali ke halaman masuk
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // Forgot password screen
+  if (isForgotPassword) {
+    return (
+      <div className="flex flex-col justify-center h-full w-full max-w-[400px] mx-auto text-center sm:text-left">
+        <div className="mb-8">
+          <button
+            onClick={() => setIsForgotPassword(false)}
+            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#2c869a] transition mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Masuk
+          </button>
+          <h1 className="text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">Lupa Sandi?</h1>
+          <p className="text-gray-500 font-medium text-[15px]">
+            {resetEmailSent
+              ? "Kami telah mengirimkan instruksi ke email Anda"
+              : "Jangan khawatir, kami akan mengirimkan instruksi reset."}
+          </p>
+        </div>
+
+        {resetEmailSent ? (
+          <div className="space-y-6">
+            <div className="w-20 h-20 rounded-2xl bg-[#2c869a]/10 flex items-center justify-center mx-auto sm:mx-0 mb-2 ring-1 ring-[#2c869a]/20">
+              <Mail className="w-10 h-10 text-[#2c869a]" />
+            </div>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <p className="text-sm text-gray-600 mb-1">Email dikirim ke:</p>
+              <p className="font-semibold text-[#0f374c]">{forgotPasswordEmail}</p>
+            </div>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Silakan cek kotak masuk email Anda dan klik link yang diberikan untuk mengatur ulang
+              kata sandi Anda.
+            </p>
+            <Button
+              onClick={() => {
+                setResetEmailSent(false);
+                setIsForgotPassword(false);
+              }}
+              className="w-full h-[52px] rounded-xl bg-[#2c869a] hover:bg-[#1f5f6e] text-white font-semibold shadow-md"
+            >
+              Kembali ke Login
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleForgotPassword} className="space-y-6">
+            <div className="space-y-1.5">
+              <Label htmlFor="forgotEmail" className="text-[#0f374c] font-semibold text-[14px]">
+                Email
+              </Label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <Input
+                  id="forgotEmail"
+                  type="email"
+                  placeholder="nama@gmail.com"
+                  className="w-full bg-white rounded-xl border border-gray-200 focus-visible:ring-[#2c869a] py-6 pl-12 text-[15px]"
+                  value={forgotPasswordEmail}
+                  onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-[52px] rounded-xl bg-[#2c869a] hover:bg-[#1f5f6e] text-white font-semibold text-[16px] transition-all shadow-md hover:shadow-lg"
+              disabled={isSendingReset}
+            >
+              {isSendingReset ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Mengirim...
+                </>
+              ) : (
+                "Kirim Link Reset"
+              )}
+            </Button>
+          </form>
+        )}
       </div>
     );
   }
@@ -235,29 +354,36 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
 
         {/* Options Row */}
         <div className="flex justify-between items-center py-2">
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <div className="relative flex items-center justify-center">
-              <input
-                type="checkbox"
-                className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-[5px] checked:bg-[#2c869a] checked:border-[#2c869a] transition-all cursor-pointer"
-              />
-              <svg
-                className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="3"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium text-gray-600 group-hover:text-gray-800 transition">
-              ingat saya
-            </span>
-          </label>
+          <form.Field name="rememberMe">
+            {(field) => (
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div className="relative flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                    className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-[5px] checked:bg-[#2c869a] checked:border-[#2c869a] transition-all cursor-pointer"
+                  />
+                  <svg
+                    className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-[13px] font-medium text-gray-600 group-hover:text-gray-800 transition">
+                  ingat saya
+                </span>
+              </label>
+            )}
+          </form.Field>
 
           <button
             type="button"
+            onClick={() => setIsForgotPassword(true)}
             className="text-[13px] font-semibold text-[#2c869a] hover:text-[#1f5f6e] hover:underline transition"
           >
             lupa kata sandi?

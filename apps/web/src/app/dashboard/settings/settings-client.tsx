@@ -83,8 +83,8 @@ export default function SettingsClient({ user }: SettingsClientProps) {
 
     try {
       const { error } = await authClient.changePassword({
-        currentPassword,
         newPassword,
+        currentPassword,
         revokeOtherSessions: true,
       });
 
