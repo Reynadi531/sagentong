@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+.next/
+**/ .next/
+dist/
+**/dist/
+out/
+**/out/
+build/
+**/build/
+
+# Turborepo & Cache
+.turbo/
+**/.turbo/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun.lockb
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+.env*.local
+
+# Git
+.git/
+.gitignore
+
+# IDE / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Documentation
+README.md
+**/README.md
+docs/
+
+# Tests
+**/tests/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx

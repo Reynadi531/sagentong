@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sagentong-db
+    restart: always
+    env_file:
+      - .env.docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  storage:
+    image: minio/minio:latest
+    container_name: sagentong-storage
+    restart: always
+    env_file:
+      - .env.docker
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sagentong-web
+    restart: always
+    env_file:
+      - .env.docker
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - storage
+
+volumes:
+  postgres_data:
+  minio_data:

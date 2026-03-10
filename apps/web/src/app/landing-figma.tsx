@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import {
   Megaphone,
   FileSpreadsheet,
@@ -18,8 +20,40 @@ import { FaTiktok } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
 
-export default function LandingFigma() {
+export interface LandingReport {
+  id: string;
+  displayId: string;
+  lokasi: string;
+  status: string;
+  updateTerakhir: string;
+}
+
+export interface LandingActivity {
+  id: string;
+  time: string;
+  action: string;
+}
+
+interface LandingFigmaProps {
+  reports?: LandingReport[];
+  activities?: LandingActivity[];
+  lastUpdated?: string;
+}
+
+export default function LandingFigma({
+  reports = [],
+  activities = [],
+  lastUpdated = "Baru saja",
+}: LandingFigmaProps) {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredReports = reports.filter(
+    (report) =>
+      report.displayId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      report.lokasi.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   return (
     <div className="w-full bg-white">
       <Header />
@@ -250,9 +284,7 @@ export default function LandingFigma() {
             <span className="text-sm md:text-[16px] font-semibold text-[#0f374c] mr-2">
               Data terakhir diperbaharui:
             </span>
-            <span className="text-sm md:text-[16px] text-[#2c869a] font-medium">
-              2 Maret 2026 17:45 WIB
-            </span>
+            <span className="text-sm md:text-[16px] text-[#2c869a] font-medium">{lastUpdated}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-[40px]">
@@ -268,10 +300,15 @@ export default function LandingFigma() {
                   <input
                     type="text"
                     placeholder="Cari ID laporan atau lokasi"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-white border border-gray-200 py-2.5 md:py-3 pl-12 pr-4 rounded-xl text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2c869a] text-sm md:text-base"
                   />
                 </div>
-                <button className="bg-[#0f374c] text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl font-medium hover:bg-[#0a2636] transition shadow-md text-sm md:text-base">
+                <button
+                  className="bg-[#0f374c] text-white px-4 md:px-8 py-2.5 md:py-3 rounded-xl font-medium hover:bg-[#0a2636] transition shadow-md text-sm md:text-base"
+                  onClick={() => {}} // Search is already dynamic via state
+                >
                   Cari
                 </button>
               </div>
@@ -279,36 +316,36 @@ export default function LandingFigma() {
               <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
                 {/* Mobile card view */}
                 <div className="md:hidden divide-y divide-gray-100">
-                  <div className="p-4 hover:bg-gray-50 transition">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-[#0f374c] text-sm">03023A</span>
-                      <span className="bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full text-xs font-semibold">
-                        Menunggu
-                      </span>
+                  {filteredReports.length > 0 ? (
+                    filteredReports.map((report) => (
+                      <div key={report.id} className="p-4 hover:bg-gray-50 transition">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-[#0f374c] text-sm">
+                            {report.displayId}
+                          </span>
+                          <span
+                            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                              report.status === "Menunggu"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : report.status === "Diverifikasi"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : report.status === "Diproses"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {report.status}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600">{report.lokasi}</p>
+                        <p className="text-xs text-gray-400 mt-1">{report.updateTerakhir}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-10 text-center text-gray-400">
+                      {searchQuery ? "Laporan tidak ditemukan" : "Belum ada laporan"}
                     </div>
-                    <p className="text-sm text-gray-600">RT 04/RW 01</p>
-                    <p className="text-xs text-gray-400 mt-1">17:55 WIB - 03/02/26</p>
-                  </div>
-                  <div className="p-4 hover:bg-gray-50 transition">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-[#0f374c] text-sm">02279B</span>
-                      <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full text-xs font-semibold">
-                        Proses
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">RT 04/RW 01</p>
-                    <p className="text-xs text-gray-400 mt-1">12:55 WIB - 27/02/26</p>
-                  </div>
-                  <div className="p-4 hover:bg-gray-50 transition">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-[#0f374c] text-sm">02257F</span>
-                      <span className="bg-green-100 text-green-700 px-2.5 py-1 rounded-full text-xs font-semibold">
-                        Terverifikasi
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">RT 04/RW 01</p>
-                    <p className="text-xs text-gray-400 mt-1">17:58 WIB - 25/02/26</p>
-                  </div>
+                  )}
                 </div>
 
                 {/* Desktop table view */}
@@ -320,38 +357,37 @@ export default function LandingFigma() {
                     <div>Update Terakhir</div>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-4 p-5 border-b border-gray-100 text-[15px] items-center text-gray-600 hover:bg-gray-50 transition">
-                    <div className="font-medium text-[#0f374c]">03023A</div>
-                    <div>RT 04/RW 01</div>
-                    <div>
-                      <span className="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide">
-                        Menunggu
-                      </span>
+                  {filteredReports.length > 0 ? (
+                    filteredReports.map((report) => (
+                      <div
+                        key={report.id}
+                        className="grid grid-cols-4 gap-4 p-5 border-b border-gray-100 text-[15px] items-center text-gray-600 hover:bg-gray-50 transition"
+                      >
+                        <div className="font-medium text-[#0f374c]">{report.displayId}</div>
+                        <div>{report.lokasi}</div>
+                        <div>
+                          <span
+                            className={`px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide ${
+                              report.status === "Menunggu"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : report.status === "Diverifikasi"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : report.status === "Diproses"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {report.status}
+                          </span>
+                        </div>
+                        <div className="text-[13px]">{report.updateTerakhir}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-10 text-center text-gray-400">
+                      {searchQuery ? "Laporan tidak ditemukan" : "Belum ada laporan"}
                     </div>
-                    <div className="text-[13px]">17:55 WIB - 03/02/26</div>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-4 p-5 border-b border-gray-100 text-[15px] items-center text-gray-600 hover:bg-gray-50 transition">
-                    <div className="font-medium text-[#0f374c]">02279B</div>
-                    <div>RT 04/RW 01</div>
-                    <div>
-                      <span className="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide">
-                        Proses
-                      </span>
-                    </div>
-                    <div className="text-[13px]">12:55 WIB - 27/02/26</div>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-4 p-5 text-[15px] items-center text-gray-600 hover:bg-gray-50 transition">
-                    <div className="font-medium text-[#0f374c]">02257F</div>
-                    <div>RT 04/RW 01</div>
-                    <div>
-                      <span className="bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide">
-                        Terverifikasi
-                      </span>
-                    </div>
-                    <div className="text-[13px]">17:58 WIB - 25/02/26</div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -362,38 +398,20 @@ export default function LandingFigma() {
                 Log Aktivitas
               </h4>
               <div className="bg-[#f8fbfa] rounded-2xl p-4 md:p-6 border border-gray-100 space-y-4 md:space-y-6">
-                <div className="flex gap-3 md:gap-4">
-                  <div className="w-[45px] shrink-0 font-semibold text-[#0f374c] text-sm md:text-[15px]">
-                    17:42
-                  </div>
-                  <div className="text-sm md:text-[15px] text-gray-600 leading-snug flex-1">
-                    Bantuan logistik tiba di Posko RW 08.
-                  </div>
-                </div>
-                <div className="flex gap-3 md:gap-4">
-                  <div className="w-[45px] shrink-0 font-semibold text-[#0f374c] text-sm md:text-[15px]">
-                    17:07
-                  </div>
-                  <div className="text-sm md:text-[15px] text-gray-600 leading-snug flex-1">
-                    Notifikasi dikirim ke 8 relawan aktif.
-                  </div>
-                </div>
-                <div className="flex gap-3 md:gap-4">
-                  <div className="w-[45px] shrink-0 font-semibold text-[#0f374c] text-sm md:text-[15px]">
-                    16:50
-                  </div>
-                  <div className="text-sm md:text-[15px] text-gray-600 leading-snug flex-1">
-                    Laporan dari RW 07 diverifikasi oleh admin.
-                  </div>
-                </div>
-                <div className="flex gap-3 md:gap-4">
-                  <div className="w-[45px] shrink-0 font-semibold text-[#0f374c] text-sm md:text-[15px]">
-                    16:32
-                  </div>
-                  <div className="text-sm md:text-[15px] text-gray-600 leading-snug flex-1">
-                    Perangkat Desa input laporan baru dari RW 07.
-                  </div>
-                </div>
+                {activities.length > 0 ? (
+                  activities.map((activity) => (
+                    <div key={activity.id} className="flex gap-3 md:gap-4">
+                      <div className="w-[45px] shrink-0 font-semibold text-[#0f374c] text-sm md:text-[15px]">
+                        {activity.time}
+                      </div>
+                      <div className="text-sm md:text-[15px] text-gray-600 leading-snug flex-1">
+                        {activity.action}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-gray-400 text-sm">Belum ada aktivitas</div>
+                )}
               </div>
             </div>
           </div>
@@ -407,12 +425,20 @@ export default function LandingFigma() {
               dipantau publik demi memastikan bantuan tersalurkan secara.
             </p>
             <div className="flex flex-wrap items-center gap-6 md:gap-10 opacity-70">
-              <span className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                Innovillage 2025
-              </span>
-              <span className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-700">
-                Telkom Indonesia
-              </span>
+              <Image
+                src="/images/innovillage.png"
+                alt="Innovillage Logo"
+                width={140}
+                height={48}
+                className="h-12 w-auto object-contain"
+              />
+              <Image
+                src="/images/telu.png"
+                alt="Telkom University Logo"
+                width={140}
+                height={48}
+                className="h-12 w-auto object-contain"
+              />
             </div>
           </div>
         </div>
