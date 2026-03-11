@@ -35,16 +35,25 @@ export interface LandingActivity {
   action: string;
 }
 
+export interface LandingStats {
+  totalLaporan: number;
+  inputDashboard: number;
+  verified: number;
+  aksiRelawan: number;
+}
+
 interface LandingFigmaProps {
   reports?: LandingReport[];
   activities?: LandingActivity[];
   lastUpdated?: string;
+  stats?: LandingStats;
 }
 
 export default function LandingFigma({
   reports = [],
   activities = [],
   lastUpdated = "Baru saja",
+  stats = { totalLaporan: 0, inputDashboard: 0, verified: 0, aksiRelawan: 0 },
 }: LandingFigmaProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -225,7 +234,7 @@ export default function LandingFigma({
                 <FileText className="w-7 h-7 md:w-10 md:h-10 text-[#2c869a]" />
               </div>
               <p className="text-2xl md:text-[40px] font-bold text-[#0f374c] mb-1 md:mb-2 leading-none">
-                342
+                {stats.totalLaporan}
               </p>
               <h4 className="text-sm md:text-[18px] font-semibold text-[#0f374c] mb-1 md:mb-3">
                 Pelaporan Warga
@@ -240,7 +249,7 @@ export default function LandingFigma({
                 <Clock className="w-7 h-7 md:w-10 md:h-10 text-[#2c869a]" />
               </div>
               <p className="text-2xl md:text-[40px] font-bold text-[#0f374c] mb-1 md:mb-2 leading-none">
-                16
+                {stats.inputDashboard}
               </p>
               <h4 className="text-sm md:text-[18px] font-semibold text-[#0f374c] mb-1 md:mb-3">
                 Input Dashboard
@@ -255,7 +264,7 @@ export default function LandingFigma({
                 <ShieldCheck className="w-7 h-7 md:w-10 md:h-10 text-[#2c869a]" />
               </div>
               <p className="text-2xl md:text-[40px] font-bold text-[#0f374c] mb-1 md:mb-2 leading-none">
-                124
+                {stats.verified}
               </p>
               <h4 className="text-sm md:text-[18px] font-semibold text-[#0f374c] mb-1 md:mb-3">
                 Verifikasi & Notifikasi
@@ -270,7 +279,7 @@ export default function LandingFigma({
                 <Users className="w-7 h-7 md:w-10 md:h-10 text-[#2c869a]" />
               </div>
               <p className="text-2xl md:text-[40px] font-bold text-[#0f374c] mb-1 md:mb-2 leading-none">
-                87
+                {stats.aksiRelawan}
               </p>
               <h4 className="text-sm md:text-[18px] font-semibold text-[#0f374c] mb-1 md:mb-3">
                 Aksi Relawan

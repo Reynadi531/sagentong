@@ -1,10 +1,27 @@
 import { db } from "@sagentong/db";
 import { laporan } from "@sagentong/db/schema/laporan";
-import { desc } from "drizzle-orm";
+import { bantuanRelawan } from "@sagentong/db/schema/bantuan";
+import { count, desc, eq, or, isNotNull } from "drizzle-orm";
 import LandingFigma, { type LandingReport, type LandingActivity } from "./landing-figma";
 
 export default async function Home() {
-  const latestReports = await db.select().from(laporan).orderBy(desc(laporan.updatedAt)).limit(10);
+  const [latestReports, [totalLaporan], [inputDashboard], [verified], [aksiRelawan]] =
+    await Promise.all([
+      db.select().from(laporan).orderBy(desc(laporan.updatedAt)).limit(10),
+      db.select({ value: count() }).from(laporan),
+      db.select({ value: count() }).from(laporan).where(isNotNull(laporan.perangkatDesaId)),
+      db
+        .select({ value: count() })
+        .from(laporan)
+        .where(
+          or(
+            eq(laporan.status, "Diverifikasi"),
+            eq(laporan.status, "Diproses"),
+            eq(laporan.status, "Selesai"),
+          ),
+        ),
+      db.select({ value: count() }).from(bantuanRelawan),
+    ]);
 
   const formatTableDate = (date: Date) => {
     const hours = date.getHours().toString().padStart(2, "0");
@@ -50,5 +67,17 @@ export default async function Home() {
   const lastUpdated =
     latestReports.length > 0 ? formatTableDate(latestReports[0]!.updatedAt) : "Belum ada data";
 
-  return <LandingFigma reports={reports} activities={activities} lastUpdated={lastUpdated} />;
+  return (
+    <LandingFigma
+      reports={reports}
+      activities={activities}
+      lastUpdated={lastUpdated}
+      stats={{
+        totalLaporan: totalLaporan?.value ?? 0,
+        inputDashboard: inputDashboard?.value ?? 0,
+        verified: verified?.value ?? 0,
+        aksiRelawan: aksiRelawan?.value ?? 0,
+      }}
+    />
+  );
 }

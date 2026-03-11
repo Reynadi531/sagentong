@@ -1142,6 +1142,17 @@ export default function RiwayatClient({
                         Rp
                       </span>
                     </div>
+
+                    <div className="mt-2 rounded-xl border border-[#2C869A]/20 bg-[#2C869A]/5 p-3">
+                      <p className="text-xs font-semibold text-[#2C869A] mb-1.5">
+                        Transfer ke Rekening:
+                      </p>
+                      <div className="flex flex-col gap-0.5 text-sm text-gray-700">
+                        <span className="font-medium">Bank Jago</span>
+                        <span className="font-bold tracking-wide">106639518697</span>
+                        <span className="text-xs text-gray-500">a.n. Nahiyah Zahrah Safitri</span>
+                      </div>
+                    </div>
                   </div>
                 )}
 
