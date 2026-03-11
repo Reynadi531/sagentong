@@ -270,9 +270,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
         <h1 className="text-2xl sm:text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">
           Selamat Datang
         </h1>
-        <p className="text-gray-500 font-medium text-[15px]">
-          Masuk Ke Akun Anda Untuk Melanjutkan
-        </p>
+        <p className="text-gray-500 font-medium text-[15px]">Masuk ke dashboard SaGentong</p>
       </div>
 
       <form
@@ -379,7 +377,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
                   </svg>
                 </div>
                 <span className="text-[13px] font-medium text-gray-600 group-hover:text-gray-800 transition">
-                  ingat saya
+                  Ingat Saya
                 </span>
               </label>
             )}
@@ -390,7 +388,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
             onClick={() => setIsForgotPassword(true)}
             className="text-[13px] font-semibold text-[#2c869a] hover:text-[#1f5f6e] hover:underline transition"
           >
-            lupa kata sandi?
+            Lupa Kata Sandi?
           </button>
         </div>
 
