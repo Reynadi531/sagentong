@@ -26,6 +26,8 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  const effectiveRole = role ?? "relawan";
+
   const titleText =
     role === "perangkat_desa"
       ? "Daftar Perangkat Desa"
@@ -43,15 +45,19 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
       disasterNotificationConsent: false,
     },
     onSubmit: async ({ value }) => {
+      const effectiveRole = role ?? "relawan";
       await authClient.signUp.email(
         {
           email: value.email,
           password: value.password,
           name: value.name,
-          role: role ?? "relawan",
-          phoneNumber: role === "relawan" ? value.phoneNumber : undefined,
+          role: effectiveRole,
+          phoneNumber:
+            effectiveRole === "relawan" || effectiveRole === "perangkat_desa"
+              ? value.phoneNumber
+              : undefined,
           disasterNotificationConsent:
-            role === "relawan" ? value.disasterNotificationConsent : false,
+            effectiveRole === "relawan" ? value.disasterNotificationConsent : false,
           callbackURL: "/verify-email",
         },
         {
@@ -83,8 +89,9 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
         })
         .refine(
           (data) => {
-            // Phone number is required only for relawan
-            if (role === "relawan") {
+            const effectiveRole = role ?? "relawan";
+            // Phone number is required for both relawan and perangkat desa
+            if (effectiveRole === "relawan" || effectiveRole === "perangkat_desa") {
               const digits = data.phoneNumber.replace(/\D/g, "");
               return (
                 digits.length >= 10 &&
@@ -102,8 +109,9 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
         )
         .refine(
           (data) => {
+            const effectiveRole = role ?? "relawan";
             // Consent is required only for relawan
-            if (role === "relawan") {
+            if (effectiveRole === "relawan") {
               return data.disasterNotificationConsent === true;
             }
             return true;
@@ -333,68 +341,68 @@ export default function SignUpForm({ onSwitchToSignIn, role, onBack }: SignUpFor
           </form.Field>
         </div>
 
-        {role === "relawan" && (
-          <>
-            <div>
-              <form.Field name="phoneNumber">
-                {(field) => (
-                  <div className="space-y-1.5">
-                    <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
-                      Nomor WhatsApp
-                    </Label>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="tel"
-                      placeholder="08xxxxxxxxxx"
-                      className="rounded-xl border-gray-200 focus-visible:ring-[#2c869a] py-[22px]"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                    <p className="text-amber-600 text-xs font-medium">
-                      Pastikan menggunakan nomor WhatsApp aktif. Nomor ini akan digunakan untuk
-                      menerima notifikasi kebencanaan.
+        {(effectiveRole === "relawan" || effectiveRole === "perangkat_desa") && (
+          <div>
+            <form.Field name="phoneNumber">
+              {(field) => (
+                <div className="space-y-1.5">
+                  <Label htmlFor={field.name} className="text-[#0f374c] font-medium text-[15px]">
+                    Nomor WhatsApp
+                  </Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="tel"
+                    placeholder="08xxxxxxxxxx"
+                    className="rounded-xl border-gray-200 focus-visible:ring-[#2c869a] py-[22px]"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  <p className="text-amber-600 text-xs font-medium">
+                    Pastikan menggunakan nomor WhatsApp aktif. Nomor ini akan digunakan untuk
+                    koordinasi dan notifikasi.
+                  </p>
+                  {field.state.meta.errors.map((error) => (
+                    <p key={error?.message} className="text-red-500 text-xs">
+                      {error?.message}
                     </p>
-                    {field.state.meta.errors.map((error) => (
-                      <p key={error?.message} className="text-red-500 text-xs">
-                        {error?.message}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </form.Field>
-            </div>
+                  ))}
+                </div>
+              )}
+            </form.Field>
+          </div>
+        )}
 
-            <div>
-              <form.Field name="disasterNotificationConsent">
-                {(field) => (
-                  <div className="space-y-1.5">
-                    <div className="flex items-start gap-3 rounded-xl border border-gray-200 p-4 bg-[#f0f9fb]/50">
-                      <Checkbox
-                        id={field.name}
-                        checked={field.state.value}
-                        onCheckedChange={(checked) => field.handleChange(checked)}
-                        className="mt-0.5 rounded-md border-[#2c869a]/40 data-checked:bg-[#2c869a] data-checked:border-[#2c869a]"
-                      />
-                      <Label
-                        htmlFor={field.name}
-                        className="text-[#0f374c] font-normal text-[13.5px] leading-relaxed cursor-pointer select-none"
-                      >
-                        Saya bersedia dihubungi dan menerima notifikasi apabila terjadi event
-                        kebencanaan
-                      </Label>
-                    </div>
-                    {field.state.meta.errors.map((error) => (
-                      <p key={error?.message} className="text-red-500 text-xs">
-                        {error?.message}
-                      </p>
-                    ))}
+        {effectiveRole === "relawan" && (
+          <div>
+            <form.Field name="disasterNotificationConsent">
+              {(field) => (
+                <div className="space-y-1.5">
+                  <div className="flex items-start gap-3 rounded-xl border border-gray-200 p-4 bg-[#f0f9fb]/50">
+                    <Checkbox
+                      id={field.name}
+                      checked={field.state.value}
+                      onCheckedChange={(checked) => field.handleChange(checked)}
+                      className="mt-0.5 rounded-md border-[#2c869a]/40 data-checked:bg-[#2c869a] data-checked:border-[#2c869a]"
+                    />
+                    <Label
+                      htmlFor={field.name}
+                      className="text-[#0f374c] font-normal text-[13.5px] leading-relaxed cursor-pointer select-none"
+                    >
+                      Saya bersedia dihubungi dan menerima notifikasi apabila terjadi event
+                      kebencanaan
+                    </Label>
                   </div>
-                )}
-              </form.Field>
-            </div>
-          </>
+                  {field.state.meta.errors.map((error) => (
+                    <p key={error?.message} className="text-red-500 text-xs">
+                      {error?.message}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </form.Field>
+          </div>
         )}
 
         <div className="pt-4">
