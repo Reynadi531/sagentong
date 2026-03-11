@@ -191,14 +191,12 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
         assistanceCategory: z
           .array(z.enum(["Dana", "Jasa", "Barang"]))
           .min(1, "Pilih minimal satu jenis bantuan"),
-        budgetDetails: z
-          .array(
-            z.object({
-              item: z.string().min(1, "Item wajib diisi"),
-              amount: z.number().min(0, "Nominal tidak boleh negatif"),
-            }),
-          )
-          .optional(),
+        budgetDetails: z.array(
+          z.object({
+            item: z.string().min(1, "Item wajib diisi"),
+            amount: z.number().min(0, "Nominal tidak boleh negatif"),
+          }),
+        ),
         latitude: z.string(),
         longitude: z.string(),
       }),
