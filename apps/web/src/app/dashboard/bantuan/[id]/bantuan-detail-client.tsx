@@ -11,6 +11,7 @@ import {
   Phone,
   Download,
   Loader2,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -32,6 +33,7 @@ interface ReportInfo {
   pelaporName: string;
   lokasi: string;
   kebutuhan: string;
+  budgetDetails: { item: string; amount: number }[] | null;
   status: string;
   deskripsi: string;
 }
@@ -44,6 +46,12 @@ export default function BantuanDetailClient({
   bantuan: BantuanItem[];
 }) {
   const [isExporting, setIsExporting] = useState(false);
+
+  const totalReceived = bantuan.reduce((acc, curr) => acc + (curr.danaAmount ?? 0), 0);
+  const totalTarget = report.budgetDetails?.reduce((acc, curr) => acc + curr.amount, 0) ?? 0;
+  const percentage =
+    totalTarget > 0 ? Math.min(Math.round((totalReceived / totalTarget) * 100), 100) : 0;
+  const rawPercentage = totalTarget > 0 ? Math.round((totalReceived / totalTarget) * 100) : 0;
 
   const formatDate = (isoString: string) => {
     return new Date(isoString).toLocaleDateString("id-ID", {
@@ -163,16 +171,69 @@ export default function BantuanDetailClient({
             </div>
           </div>
 
-          <div className="flex flex-col md:items-end gap-1">
+          <div className="flex flex-col md:items-end gap-1 shrink-0">
             <span className="text-white/70 text-xs font-bold uppercase tracking-wider">
-              Total Dana
+              Total Terkumpul
             </span>
-            <span className="text-xl sm:text-2xl font-black">
-              {formatRupiah(bantuan.reduce((acc, curr) => acc + (curr.danaAmount ?? 0), 0))}
+            <span className="text-xl sm:text-2xl font-black">{formatRupiah(totalReceived)}</span>
+            {totalTarget > 0 && (
+              <span className="text-white/70 text-xs uppercase font-bold">
+                Target: {formatRupiah(totalTarget)}
+              </span>
+            )}
+            <span className="text-white/70 text-[10px] uppercase mt-1">
+              {bantuan.length} Kontribusi
             </span>
-            <span className="text-white/70 text-xs uppercase">{bantuan.length} Kontribusi</span>
           </div>
         </div>
+
+        {/* Progress Bar Section */}
+        {totalTarget > 0 && (
+          <div className="mt-6 flex flex-col gap-2 relative z-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider">
+              <span className="text-white">Progres Dana Bantuan</span>
+              <span className="text-white text-base">{rawPercentage}%</span>
+            </div>
+            <div className="h-4 w-full bg-white/20 rounded-full overflow-hidden border border-white/10 shadow-inner">
+              <div
+                className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(74,222,128,0.5)]"
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
+            <p className="text-[10px] text-white/60 italic">
+              *Telah terkumpul {formatRupiah(totalReceived)} dari target {formatRupiah(totalTarget)}
+            </p>
+          </div>
+        )}
+
+        {/* Target Budget Details */}
+        {report.budgetDetails && report.budgetDetails.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-white/20">
+            <div className="flex flex-col gap-3">
+              <span className="text-white/70 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                <CreditCard className="size-3.5" />
+                Target Rincian Dana yang Dibutuhkan
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+                {report.budgetDetails.map((bd, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center text-sm border-b border-white/10 pb-1 last:border-0"
+                  >
+                    <span className="text-white/90 font-medium">{bd.item}</span>
+                    <span className="text-white font-black">{formatRupiah(bd.amount)}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center pt-2 sm:col-span-2">
+                  <span className="text-white font-bold">Total Target Estimasi</span>
+                  <span className="text-lg font-black underline decoration-2 underline-offset-4">
+                    {formatRupiah(report.budgetDetails.reduce((acc, curr) => acc + curr.amount, 0))}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Assistance Items Grid */}

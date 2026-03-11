@@ -57,6 +57,7 @@ export interface ReportData {
   lokasi: string;
   jenisBantuan: string;
   assistanceCategory: string | null;
+  budgetDetails: { item: string; amount: number }[] | null;
   needsType: string;
   deskripsi: string;
   latitude: string | null;
@@ -138,6 +139,14 @@ function formatDateLong(isoString: string) {
     month: "long",
     year: "numeric",
   });
+}
+
+function formatRupiah(amount: number) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(amount);
 }
 
 function buildWhatsAppMessage(report: ReportData): string {
@@ -831,6 +840,34 @@ export default function RiwayatClient({
                   <DetailRow label="Kontak" value={selectedReport.contactNumber} />
                 </div>
               </div>
+
+              {/* Rincian Dana section */}
+              {selectedReport.budgetDetails && selectedReport.budgetDetails.length > 0 && (
+                <div className="flex flex-col gap-3 p-4 bg-[#2C869A]/5 rounded-xl border border-[#2C869A]/10 animate-in fade-in zoom-in duration-300">
+                  <div className="flex items-center gap-2 border-b border-[#2C869A]/10 pb-2">
+                    <CreditCard className="size-4 text-[#2C869A]" />
+                    <h4 className="text-sm font-bold text-[#0f374c]">
+                      Rincian Dana yang Dibutuhkan
+                    </h4>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {selectedReport.budgetDetails.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-xs">
+                        <span className="text-gray-600 font-medium">{item.item}</span>
+                        <span className="text-gray-900 font-bold">{formatRupiah(item.amount)}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between items-center pt-2 border-t border-[#2C869A]/10 mt-1">
+                      <span className="text-xs font-black text-[#0f374c]">Total Estimasi</span>
+                      <span className="text-sm font-black text-[#2C869A]">
+                        {formatRupiah(
+                          selectedReport.budgetDetails.reduce((acc, curr) => acc + curr.amount, 0),
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-gray-800">Deskripsi</span>

@@ -57,6 +57,13 @@
       "when": 1773143053971,
       "tag": "0007_fat_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773236822268,
+      "tag": "0008_gigantic_komodo",
+      "breakpoints": true
     }
   ]
 }

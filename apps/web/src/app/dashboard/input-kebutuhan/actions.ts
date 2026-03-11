@@ -18,7 +18,18 @@ const reportSchema = z.object({
   waterHeight: z.string().min(1, "Ketinggian air wajib dipilih"),
   description: z.string().min(1, "Deskripsi kondisi wajib diisi"),
   needsType: z.string().min(1, "Jenis kebutuhan wajib diisi"),
-  assistanceCategory: z.enum(["Dana", "Jasa", "Barang"]),
+  assistanceCategory: z
+    .array(z.enum(["Dana", "Jasa", "Barang"]))
+    .min(1, "Pilih minimal satu jenis bantuan"),
+  budgetDetails: z
+    .array(
+      z.object({
+        item: z.string().min(1, "Item wajib diisi"),
+        amount: z.number().min(0, "Nominal tidak boleh negatif"),
+      }),
+    )
+    .optional()
+    .nullable(),
   latitude: z.string().optional().nullable(),
   longitude: z.string().optional().nullable(),
   evidenceImageKey: z.string().nullable(),
@@ -68,7 +79,8 @@ export async function submitReport(data: ReportInput): Promise<SubmitReportResul
       waterHeight: parsed.data.waterHeight,
       description: parsed.data.description,
       needsType: parsed.data.needsType,
-      assistanceCategory: parsed.data.assistanceCategory,
+      assistanceCategory: parsed.data.assistanceCategory.join(", "),
+      budgetDetails: parsed.data.budgetDetails,
       latitude: parsed.data.latitude,
       longitude: parsed.data.longitude,
       evidenceImage: parsed.data.evidenceImageKey,

@@ -63,9 +63,21 @@ export default async function StatistikLaporanPage() {
     .from(laporan)
     .groupBy(laporan.assistanceCategory);
 
-  const pieChartData = pieChartRaw.map((r) => ({
-    name: r.name ? `Bantuan ${r.name}` : "Tidak Diketahui",
-    value: r.value,
+  const categoryCounts: Record<string, number> = {};
+  pieChartRaw.forEach((row) => {
+    if (row.name) {
+      const categories = row.name.split(",").map((c) => c.trim());
+      categories.forEach((cat) => {
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + row.value;
+      });
+    } else {
+      categoryCounts["Tidak Diketahui"] = (categoryCounts["Tidak Diketahui"] || 0) + row.value;
+    }
+  });
+
+  const pieChartData = Object.entries(categoryCounts).map(([name, value]) => ({
+    name: name === "Tidak Diketahui" ? name : `Bantuan ${name}`,
+    value,
   }));
 
   // -------------------------------------------------------------------------

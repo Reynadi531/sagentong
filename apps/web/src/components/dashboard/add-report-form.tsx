@@ -18,6 +18,8 @@ import {
   Loader2,
   Trash2,
   ImageIcon,
+  Check,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { submitReport, type ReportInput } from "@/app/dashboard/input-kebutuhan/actions";
@@ -41,6 +43,14 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
 
   const handleFileUpload = useCallback(async (file: File) => {
     // Client-side validation
@@ -143,7 +153,8 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
       waterHeight: "",
       description: "",
       needsType: "",
-      assistanceCategory: "Dana" as "Dana" | "Jasa" | "Barang",
+      assistanceCategory: ["Dana"] as ("Dana" | "Jasa" | "Barang")[],
+      budgetDetails: [] as { item: string; amount: number }[],
       latitude: "",
       longitude: "",
     },
@@ -177,7 +188,17 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
         waterHeight: z.string().min(1, "Ketinggian air wajib dipilih"),
         description: z.string().min(1, "Deskripsi kondisi wajib diisi"),
         needsType: z.string().min(1, "Jenis kebutuhan wajib diisi"),
-        assistanceCategory: z.enum(["Dana", "Jasa", "Barang"]),
+        assistanceCategory: z
+          .array(z.enum(["Dana", "Jasa", "Barang"]))
+          .min(1, "Pilih minimal satu jenis bantuan"),
+        budgetDetails: z
+          .array(
+            z.object({
+              item: z.string().min(1, "Item wajib diisi"),
+              amount: z.number().min(0, "Nominal tidak boleh negatif"),
+            }),
+          )
+          .optional(),
         latitude: z.string(),
         longitude: z.string(),
       }),
@@ -517,10 +538,17 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                     <button
                       key={item.value}
                       type="button"
-                      onClick={() => field.handleChange(item.value)}
+                      onClick={() => {
+                        const current = field.state.value;
+                        if (current.includes(item.value)) {
+                          field.handleChange(current.filter((v) => v !== item.value));
+                        } else {
+                          field.handleChange([...current, item.value]);
+                        }
+                      }}
                       className={cn(
-                        "flex items-center justify-start p-4 rounded-2xl border-2 transition-all group text-left",
-                        field.state.value === item.value
+                        "flex items-center justify-between p-4 rounded-2xl border-2 transition-all group text-left",
+                        field.state.value.includes(item.value)
                           ? "border-[#2C869A] bg-[#2C869A]/5 shadow-inner"
                           : "border-gray-100 hover:border-[#2C869A]/30 hover:bg-gray-50",
                       )}
@@ -529,7 +557,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                         <div
                           className={cn(
                             "p-2 rounded-xl transition-colors shrink-0",
-                            field.state.value === item.value
+                            field.state.value.includes(item.value)
                               ? "bg-[#2C869A] text-white"
                               : "bg-gray-100 text-gray-400 group-hover:bg-[#2C869A]/10 group-hover:text-[#2C869A]",
                           )}
@@ -545,6 +573,20 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                           </span>
                         </div>
                       </div>
+
+                      {/* Checklist Indicator */}
+                      <div
+                        className={cn(
+                          "size-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ml-2",
+                          field.state.value.includes(item.value)
+                            ? "bg-[#2C869A] border-[#2C869A] text-white"
+                            : "border-gray-200 bg-white group-hover:border-[#2C869A]/30",
+                        )}
+                      >
+                        {field.state.value.includes(item.value) && (
+                          <Check className="size-3.5" strokeWidth={3} />
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -556,6 +598,107 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
               </div>
             )}
           </form.Field>
+
+          <form.Subscribe selector={(state) => [state.values.assistanceCategory]}>
+            {([assistanceCategory]) =>
+              assistanceCategory.includes("Dana") && (
+                <form.Field name="budgetDetails">
+                  {(field) => (
+                    <div className="flex flex-col gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-bold text-gray-700">
+                          Rincian Dana yang Dibutuhkan
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            field.handleChange([...field.state.value, { item: "", amount: 0 }])
+                          }
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C869A] text-white text-xs font-bold rounded-lg hover:bg-[#236e7f] transition-colors shadow-sm"
+                        >
+                          <Plus className="size-3.5" />
+                          Tambah Item
+                        </button>
+                      </div>
+
+                      <div className="flex flex-col gap-3">
+                        {field.state.value.length === 0 ? (
+                          <p className="text-xs text-gray-400 text-center py-4 bg-white rounded-xl border border-dashed border-gray-200">
+                            Belum ada rincian. Klik "Tambah Item" untuk memulai.
+                          </p>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            {field.state.value.map((item, index) => (
+                              <div key={index} className="flex gap-2 items-start">
+                                <div className="flex-1">
+                                  <input
+                                    type="text"
+                                    placeholder="Nama kebutuhan (misal: Sembako)"
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] bg-white"
+                                    value={item.item}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => {
+                                      const newList = [...field.state.value];
+                                      newList[index] = { ...newList[index], item: e.target.value };
+                                      field.handleChange(newList);
+                                    }}
+                                  />
+                                </div>
+                                <div className="w-32 md:w-40">
+                                  <input
+                                    type="number"
+                                    placeholder="Nominal"
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] bg-white"
+                                    value={item.amount || ""}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => {
+                                      const val =
+                                        e.target.value === "" ? 0 : Number(e.target.value);
+                                      const newList = [...field.state.value];
+                                      newList[index] = { ...newList[index], amount: val };
+                                      field.handleChange(newList);
+                                    }}
+                                  />
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newList = field.state.value.filter((_, i) => i !== index);
+                                    field.handleChange(newList);
+                                  }}
+                                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                  <Trash2 className="size-4" />
+                                </button>
+                              </div>
+                            ))}
+                            <div className="flex justify-between items-center p-3 mt-2 bg-white rounded-xl border border-gray-100 shadow-sm">
+                              <span className="text-sm font-bold text-gray-700">
+                                Total Estimasi:
+                              </span>
+                              <span className="text-sm font-black text-[#2C869A]">
+                                {formatCurrency(
+                                  field.state.value.reduce(
+                                    (acc, curr) => acc + (curr.amount || 0),
+                                    0,
+                                  ),
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      {field.state.meta.errors.map((error) => (
+                        <p key={error?.message} className="text-red-500 text-[10px] font-medium">
+                          {error?.message}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </form.Field>
+              )
+            }
+          </form.Subscribe>
 
           <form.Field name="needsType">
             {(field) => (

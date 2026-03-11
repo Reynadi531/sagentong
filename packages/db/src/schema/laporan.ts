@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, uuid, jsonb } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 export const laporan = pgTable("laporan", {
@@ -13,6 +13,7 @@ export const laporan = pgTable("laporan", {
   waterHeight: text("water_height"),
   needsType: text("needs_type").notNull(), // Specific need like 'Bantuan Sembako'
   assistanceCategory: text("assistance_category"), // General category like 'Dana', 'Jasa', 'Barang'
+  budgetDetails: jsonb("budget_details").$type<{ item: string; amount: number }[]>(),
   description: text("description").notNull(),
   latitude: text("latitude"),
   longitude: text("longitude"),

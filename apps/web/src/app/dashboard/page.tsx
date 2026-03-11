@@ -100,11 +100,27 @@ export default async function DashboardPage() {
   }));
 
   // --- Real data for widgets ---
-  const popularNeeds = needsResult.map((n) => ({
-    name: n.name ? `Bantuan ${n.name}` : "Tidak Diketahui",
-    count: n.count,
-    percentage: totalAllTime > 0 ? Math.round((n.count / totalAllTime) * 100) : 0,
-  }));
+  const dashboardCategoryCounts: Record<string, number> = {};
+  needsResult.forEach((row) => {
+    if (row.name) {
+      const categories = row.name.split(",").map((c) => c.trim());
+      categories.forEach((cat) => {
+        dashboardCategoryCounts[cat] = (dashboardCategoryCounts[cat] || 0) + row.count;
+      });
+    } else {
+      dashboardCategoryCounts["Tidak Diketahui"] =
+        (dashboardCategoryCounts["Tidak Diketahui"] || 0) + row.count;
+    }
+  });
+
+  const popularNeeds = Object.entries(dashboardCategoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name, countValue]) => ({
+      name: name === "Tidak Diketahui" ? name : `Bantuan ${name}`,
+      count: countValue,
+      percentage: totalAllTime > 0 ? Math.round((countValue / totalAllTime) * 100) : 0,
+    }));
 
   function formatTimeAgo(date: Date) {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);

@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Eye, Calendar, MapPin, ChevronLeft, ChevronRight, Package } from "lucide-react";
+import {
+  Eye,
+  Calendar,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+  Package,
+  CreditCard,
+} from "lucide-react";
 import Link from "next/link";
 
 interface ReportWithBantuanCount {
@@ -9,6 +17,7 @@ interface ReportWithBantuanCount {
   pelaporName: string;
   lokasi: string;
   kebutuhan: string;
+  budgetDetails: { item: string; amount: number }[] | null;
   status: string;
   tanggalLaporan: string;
   jumlahBantuan: number;
@@ -82,6 +91,26 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
                       {formatDate(item.tanggalLaporan)}
                     </span>
                   </div>
+
+                  {item.budgetDetails && item.budgetDetails.length > 0 && (
+                    <div className="rounded-xl bg-gray-50/80 border border-gray-100 p-3 space-y-2">
+                      <div className="flex items-center gap-1.5 border-b border-gray-100 pb-1.5">
+                        <CreditCard className="size-3 text-[#2C869A]" />
+                        <span className="text-[10px] font-bold text-[#0f374c]">Rincian Dana</span>
+                      </div>
+                      <div className="space-y-1">
+                        {item.budgetDetails.map((bd, idx) => (
+                          <div key={idx} className="flex justify-between text-[10px]">
+                            <span className="text-gray-500">{bd.item}</span>
+                            <span className="font-semibold text-gray-700">
+                              {formatRupiah(bd.amount)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1.5">
@@ -117,6 +146,7 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
               <tr className="border-b border-gray-100 text-gray-500">
                 <th className="pb-4 font-medium whitespace-nowrap">Laporan / Pelapor</th>
                 <th className="pb-4 px-4 font-medium whitespace-nowrap">Lokasi</th>
+                <th className="pb-4 px-4 font-medium whitespace-nowrap">Rincian Kebutuhan Dana</th>
                 <th className="pb-4 px-4 font-medium whitespace-nowrap">Status Laporan</th>
                 <th className="pb-4 px-4 font-medium text-center whitespace-nowrap">
                   Jumlah Bantuan
@@ -129,7 +159,7 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
             <tbody className="divide-y divide-gray-50">
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-400">
+                  <td colSpan={8} className="py-12 text-center text-gray-400">
                     Belum ada bantuan yang masuk untuk laporan manapun.
                   </td>
                 </tr>
@@ -147,6 +177,22 @@ export default function BantuanListClient({ reports }: { reports: ReportWithBant
                         <MapPin className="size-3.5 text-gray-400" />
                         {item.lokasi}
                       </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      {item.budgetDetails && item.budgetDetails.length > 0 ? (
+                        <div className="flex flex-col gap-1 min-w-[150px]">
+                          {item.budgetDetails.map((bd, idx) => (
+                            <div key={idx} className="flex justify-between text-[11px] gap-2">
+                              <span className="text-gray-500 truncate">{bd.item}</span>
+                              <span className="font-bold text-gray-700 whitespace-nowrap">
+                                {formatRupiah(bd.amount)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="py-4 px-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">

@@ -68,6 +68,7 @@ export default async function BantuanDetailPage({ params }: { params: Promise<{ 
     pelaporName: report.pelaporName,
     lokasi: `RW ${report.rw} RT ${report.rt}`,
     kebutuhan: report.needsType,
+    budgetDetails: report.budgetDetails,
     status: report.status,
     deskripsi: report.description,
   };
