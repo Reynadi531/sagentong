@@ -15,6 +15,7 @@
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "DOTENV_CONFIG_PATH=../../apps/web/.env bun run src/seed.ts",
+    "db:seed:users": "DOTENV_CONFIG_PATH=../../apps/web/.env bun run src/seed-users.ts",
     "db:start": "docker compose up -d",
     "db:watch": "docker compose up",
     "db:stop": "docker compose stop",

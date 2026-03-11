@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import {
   Calendar,
   User,
@@ -12,10 +12,12 @@ import {
   Download,
   Loader2,
   CreditCard,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { deleteBantuan } from "./actions";
 
 interface BantuanItem {
   id: string;
@@ -41,11 +43,14 @@ interface ReportInfo {
 export default function BantuanDetailClient({
   report,
   bantuan,
+  userRole,
 }: {
   report: ReportInfo;
   bantuan: BantuanItem[];
+  userRole: string;
 }) {
   const [isExporting, setIsExporting] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const totalReceived = bantuan.reduce((acc, curr) => acc + (curr.danaAmount ?? 0), 0);
   const totalTarget = report.budgetDetails?.reduce((acc, curr) => acc + curr.amount, 0) ?? 0;
@@ -105,6 +110,19 @@ export default function BantuanDetailClient({
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const handleDeleteBantuan = (bantuanId: string) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus data bantuan ini?")) return;
+
+    startTransition(async () => {
+      const result = await deleteBantuan(bantuanId);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    });
   };
 
   return (
@@ -272,6 +290,16 @@ export default function BantuanDetailClient({
                     <div className="px-3 py-1 rounded-lg bg-white border border-gray-100 text-[11px] font-bold text-[#2C869A] shadow-sm">
                       {item.jenisBantuan}
                     </div>
+                    {userRole === "superadmin" && (
+                      <button
+                        onClick={() => handleDeleteBantuan(item.id)}
+                        disabled={isPending}
+                        className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                        title="Hapus Bantuan"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

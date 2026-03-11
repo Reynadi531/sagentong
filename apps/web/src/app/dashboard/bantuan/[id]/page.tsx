@@ -73,5 +73,11 @@ export default async function BantuanDetailPage({ params }: { params: Promise<{ 
     deskripsi: report.description,
   };
 
-  return <BantuanDetailClient report={formattedReport} bantuan={formattedBantuan} />;
+  return (
+    <BantuanDetailClient
+      report={formattedReport}
+      bantuan={formattedBantuan}
+      userRole={session.user.role}
+    />
+  );
 }
