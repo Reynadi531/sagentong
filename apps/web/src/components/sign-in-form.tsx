@@ -377,7 +377,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
                   </svg>
                 </div>
                 <span className="text-[13px] font-medium text-gray-600 group-hover:text-gray-800 transition">
-                  Ingat Saya
+                  Ingat saya
                 </span>
               </label>
             )}
