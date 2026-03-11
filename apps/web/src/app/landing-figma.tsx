@@ -19,6 +19,7 @@ import {
 import { FaTiktok } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
+import Link from "next/link";
 
 export interface LandingReport {
   id: string;
@@ -449,22 +450,22 @@ export default function LandingFigma({
         <div className="max-w-[1336px] mx-auto text-center text-white">
           <h2 className="text-2xl md:text-[36px] font-bold mb-8 md:mb-16 capitalize">kontak</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-[60px] mb-8 md:mb-16 max-w-3xl mx-auto">
-            <div>
-              <p className="text-base md:text-[20px] font-semibold mb-1 md:mb-2 capitalize">
-                kepala desa Dayeuhkolot
-              </p>
-              <p className="text-base md:text-[20px] font-light">+6281314738522</p>
-            </div>
+          <div className="flex items-center justify-center gap-6 md:gap-10">
             <div>
               <p className="text-base md:text-[20px] font-semibold mb-1 md:mb-2 capitalize">
                 admin SaGentong
               </p>
-              <p className="text-base md:text-[20px] font-light">+6281223455727</p>
+              <Link
+                href="https://wa.me/628111030580"
+                target="_blank"
+                className="text-[#e5f3f6] hover:text-white transition"
+              >
+                <p className="text-base md:text-[20px] font-light">+628111030580</p>
+              </Link>
             </div>
           </div>
 
-          <div className="flex justify-center gap-4 md:gap-8 mb-8 md:mb-16">
+          <div className="flex justify-center gap-4 md:gap-8 mb-8 md:mb-16 mt-6">
             <div className="w-10 h-10 md:w-[42px] md:h-[42px] rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer">
               <Instagram className="w-4 h-4 md:w-5 md:h-5" />
             </div>
@@ -481,7 +482,15 @@ export default function LandingFigma({
 
           <div className="border-t border-white/20 pt-8">
             <p className="text-[15px] font-light opacity-80">
-              © 2026 Website Desa dayeuhkolot. Powered By NWL
+              Website Sagentong © 2026, All Right Reserved.
+              <br />
+              <Link
+                href="https://nwl.works"
+                target="_blank"
+                className="text-white hover:text-gray-200 transition"
+              >
+                Engineered by Nusantara Wing Labs
+              </Link>
             </p>
           </div>
         </div>
