@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 interface StatCardProps {
   title: string;
   value: number;
-  theme: "teal" | "orange" | "green";
+  theme: "teal" | "orange" | "green" | "monochrome";
 }
 
 const themeStyles = {
@@ -22,6 +22,11 @@ const themeStyles = {
     bg: "bg-[#2C9A3D]/10",
     text: "text-[#2C9A3D]",
     border: "border-[#2C9A3D]/20",
+  },
+  monochrome: {
+    bg: "bg-gray-100",
+    text: "text-[#0f374c]",
+    border: "border-gray-200",
   },
 };
 

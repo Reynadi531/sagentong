@@ -62,9 +62,9 @@ export default async function DashboardPage() {
       .orderBy(desc(laporan.createdAt))
       .limit(3),
     db
-      .select({ name: laporan.needsType, count: count() })
+      .select({ name: laporan.assistanceCategory, count: count() })
       .from(laporan)
-      .groupBy(laporan.needsType)
+      .groupBy(laporan.assistanceCategory)
       .orderBy(desc(count()))
       .limit(3),
     db
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
 
   // --- Real data for widgets ---
   const popularNeeds = needsResult.map((n) => ({
-    name: n.name,
+    name: n.name ? `Bantuan ${n.name}` : "Tidak Diketahui",
     count: n.count,
     percentage: totalAllTime > 0 ? Math.round((n.count / totalAllTime) * 100) : 0,
   }));
@@ -142,9 +142,9 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-4 md:gap-6 max-w-[1200px] mx-auto w-full">
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-        <StatCard title="Total Laporan Hari Ini" value={stats.total} theme="teal" />
-        <StatCard title="Laporan Belum Di Proses" value={stats.unprocessed} theme="orange" />
-        <StatCard title="Laporan Dikirim Ke Admin" value={stats.toAdmin} theme="green" />
+        <StatCard title="Total Laporan Hari Ini" value={stats.total} theme="monochrome" />
+        <StatCard title="Laporan Belum Di Proses" value={stats.unprocessed} theme="monochrome" />
+        <StatCard title="Laporan Dikirim Ke Admin" value={stats.toAdmin} theme="monochrome" />
       </div>
 
       {/* Main Table Area */}
