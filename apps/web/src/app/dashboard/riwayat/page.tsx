@@ -65,7 +65,7 @@ export default async function RiwayatPage() {
   let allRelawans: Subscriber[] = [];
   const userRole = session.user.role;
 
-  if (userRole === "perangkat_desa" || userRole === "superadmin") {
+  if (userRole === "superadmin") {
     const relawans = await db
       .select({
         name: user.name,

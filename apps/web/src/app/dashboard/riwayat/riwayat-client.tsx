@@ -197,6 +197,7 @@ export default function RiwayatClient({
   allRelawans,
 }: RiwayatClientProps) {
   const isAdmin = userRole === "perangkat_desa" || userRole === "superadmin";
+  const isSuperadmin = userRole === "superadmin";
   const isRelawan = userRole === "relawan";
 
   // State
@@ -612,14 +613,16 @@ export default function RiwayatClient({
                           <RefreshCw className="size-3.5" />
                           Status
                         </button>
-                        <button
-                          onClick={() => handleOpenWaSheet(report)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 rounded-lg border border-green-200 hover:bg-green-50 transition-colors"
-                        >
-                          <Send className="size-3.5" />
-                          WA
-                        </button>
-                        {userRole === "superadmin" && (
+                        {isSuperadmin && (
+                          <button
+                            onClick={() => handleOpenWaSheet(report)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 rounded-lg border border-green-200 hover:bg-green-50 transition-colors"
+                          >
+                            <Send className="size-3.5" />
+                            WA
+                          </button>
+                        )}
+                        {isSuperadmin && (
                           <button
                             onClick={() => handleDeleteReport(report.id)}
                             className="inline-flex items-center justify-center size-8 ml-auto text-red-500 rounded-lg hover:bg-red-50 transition-colors"
@@ -727,15 +730,19 @@ export default function RiwayatClient({
                                   <RefreshCw className="size-4" />
                                   Ubah Status
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="gap-2 rounded-md px-3 py-2 text-sm cursor-pointer"
-                                  onClick={() => handleOpenWaSheet(report)}
-                                >
-                                  <Send className="size-4" />
-                                  Broadcast WhatsApp
-                                </DropdownMenuItem>
-                                {userRole === "superadmin" && (
+                                {isSuperadmin && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      className="gap-2 rounded-md px-3 py-2 text-sm cursor-pointer"
+                                      onClick={() => handleOpenWaSheet(report)}
+                                    >
+                                      <Send className="size-4" />
+                                      Broadcast WhatsApp
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                                {isSuperadmin && (
                                   <>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
