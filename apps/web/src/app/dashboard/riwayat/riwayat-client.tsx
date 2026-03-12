@@ -17,10 +17,10 @@ import {
   ImageIcon,
   Loader2,
   CreditCard,
-  Wrench,
   Box,
   Download,
 } from "lucide-react";
+import { FaPeopleCarry } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -1105,7 +1105,7 @@ export default function RiwayatClient({
                     {(
                       [
                         { value: "Dana", icon: CreditCard },
-                        { value: "Jasa", icon: Wrench },
+                        { value: "Jasa", icon: FaPeopleCarry },
                         { value: "Barang", icon: Box },
                       ] as const
                     ).map((item) => (
@@ -1149,7 +1149,7 @@ export default function RiwayatClient({
                       </p>
                       <div className="flex flex-col gap-0.5 text-sm text-gray-700">
                         <span className="font-medium">Bank Jago</span>
-                        <span className="font-bold tracking-wide">106639518697</span>
+                        <span className="font-bold tracking-wide">101479964645</span>
                         <span className="text-xs text-gray-500">a.n. Nahiyah Zahrah Safitri</span>
                       </div>
                     </div>

@@ -90,13 +90,13 @@ export default function LandingFigma({
 
         {/* Content */}
         <div className="relative h-full flex flex-col justify-center items-start px-6 md:px-12 lg:px-[100px] py-12 md:py-20 w-full max-w-[1336px] mx-auto z-10">
-          <h1 className="text-2xl sm:text-[32px] md:text-[40px] lg:text-[56px] font-bold text-white mb-4 md:mb-[20px] leading-[1.2] drop-shadow-[0px_4px_12px_rgba(0,0,0,0.4)] capitalize">
-            <div>Sistem bantuan darurat</div>
-            <div>untuk korban banjir</div>
+          <h1 className="text-2xl sm:text-[32px] md:text-[40px] lg:text-[56px] font-bold text-white mb-4 md:mb-[20px] leading-[1.2] drop-shadow-[0px_4px_12px_rgba(0,0,0,0.4)]">
+            Sistem Bantuan Darurat <br />
+            untuk Korban Banjir
           </h1>
 
           <p className="text-base md:text-[20px] text-white mb-8 md:mb-[45px] max-w-2xl drop-shadow-[0px_4px_12px_rgba(0,0,0,0.25)] font-normal leading-relaxed md:leading-[30px]">
-            Laporan, verifikasi, dan Distribusi Bantuan Untuk Warga Dayeuhkolot
+            Laporan, Verifikasi, dan Distribusi Bantuan Untuk Warga Dayeuhkolot
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 w-full sm:w-auto">
@@ -475,9 +475,13 @@ export default function LandingFigma({
           </div>
 
           <div className="flex justify-center gap-4 md:gap-8 mb-8 md:mb-16 mt-6">
-            <div className="w-10 h-10 md:w-[42px] md:h-[42px] rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer">
+            <Link
+              href="https://www.instagram.com/sagentong.id"
+              target="_blank"
+              className="w-10 h-10 md:w-[42px] md:h-[42px] rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer"
+            >
               <Instagram className="w-4 h-4 md:w-5 md:h-5" />
-            </div>
+            </Link>
             <div className="w-10 h-10 md:w-[42px] md:h-[42px] rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer">
               <Facebook className="w-4 h-4 md:w-5 md:h-5" />
             </div>

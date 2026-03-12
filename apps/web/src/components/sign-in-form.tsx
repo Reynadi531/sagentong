@@ -270,7 +270,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
         <h1 className="text-2xl sm:text-[32px] font-bold text-[#0f374c] mb-2 leading-tight">
           Selamat Datang
         </h1>
-        <p className="text-gray-500 font-medium text-[15px]">Masuk ke dashboard SaGentong</p>
+        <p className="text-gray-500 font-medium text-[15px]">Masuk ke Dashboard SaGentong</p>
       </div>
 
       <form

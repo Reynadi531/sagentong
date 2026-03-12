@@ -12,7 +12,6 @@ import {
   Upload,
   ChevronDown,
   CreditCard,
-  Wrench,
   Box,
   X,
   Loader2,
@@ -20,7 +19,9 @@ import {
   ImageIcon,
   Check,
   Plus,
+  Send,
 } from "lucide-react";
+import { FaPeopleCarry } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { submitReport, type ReportInput } from "@/app/dashboard/input-kebutuhan/actions";
 
@@ -247,7 +248,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                   <label className="text-sm font-semibold text-gray-700">Nama Pelapor</label>
                   <input
                     type="text"
-                    placeholder="masukkan nama lengkap"
+                    placeholder="Masukkan nama lengkap"
                     className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB]"
                     value={field.state.value}
                     onBlur={field.handleBlur}
@@ -336,7 +337,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                   <div className="flex flex-col gap-2">
                     <label className="text-sm font-semibold text-gray-700">Detail Alamat</label>
                     <textarea
-                      placeholder="masukkan detail alamat"
+                      placeholder="Masukkan detail alamat"
                       rows={3}
                       className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2C869A]/20 focus:border-[#2C869A] transition-all bg-[#F9FAFB] resize-none"
                       value={field.state.value}
@@ -523,7 +524,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                         value: "Jasa",
                         label: "Bantuan Jasa",
                         desc: "Tenaga Relawan & Infrastruktur",
-                        icon: Wrench,
+                        icon: FaPeopleCarry,
                       },
                       {
                         value: "Barang",
@@ -796,12 +797,12 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                   </div>
                   <p className="font-bold text-gray-700">Upload Foto Kondisi</p>
                   <p className="text-gray-400 text-sm mb-4 text-center">
-                    Drag & Drop atau Klik Untuk Memilih File
+                    Drag & Drop atau Klik untuk Memilih File
                   </p>
                   <span className="px-6 py-2 bg-[#2C869A] text-white font-bold rounded-xl text-sm shadow-lg shadow-[#2C869A]/20">
                     Pilih File
                   </span>
-                  <p className="mt-4 text-[11px] text-gray-400">
+                  <p className="mt-4 text-[11px] text-gray-400 text-center">
                     Upload Foto Kondisi Lapangan Sebagai Bukti Laporan
                     <br />
                     Format: JPG, PNG, JPEG (Max: 5MB Per File)
@@ -832,7 +833,7 @@ export default function AddReportForm({ onClose }: AddReportFormProps) {
                   </>
                 ) : (
                   <>
-                    <MapPin className="size-5" />
+                    <Send className="size-5" />
                     Submit Laporan
                   </>
                 )}
