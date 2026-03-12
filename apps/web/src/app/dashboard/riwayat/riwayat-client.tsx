@@ -150,6 +150,20 @@ function formatRupiah(amount: number) {
 }
 
 function buildWhatsAppMessage(report: ReportData): string {
+  const includesDana = report.assistanceCategory
+    ?.split(",")
+    .map((s) => s.trim())
+    .includes("Dana");
+
+  const rekeningBlock = includesDana
+    ? `
+
+*Informasi Rekening Bantuan Dana:*
+Bank Jago
+101479964645
+a.n. Nahiyah Zahrah Safitri`
+    : "";
+
   return `*Laporan Bantuan Bencana - SaGentong*
 
 Tanggal: ${formatDateLong(report.tanggal)}
@@ -163,6 +177,7 @@ Kontak: ${report.contactNumber}
 
 Deskripsi:
 ${report.deskripsi}
+${rekeningBlock}
 
 ---
 Dikirim melalui SaGentong Dashboard`;
