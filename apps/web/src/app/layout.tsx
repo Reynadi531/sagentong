@@ -74,6 +74,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://sagentong.com",
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const dynamic = "force-dynamic";
