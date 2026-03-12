@@ -92,14 +92,16 @@ const SidebarContent: React.FC<SidebarContentIProps> = ({ roles, session }) => {
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="flex w-full items-center px-6 py-8">
-        <Image
-          src="/assets/logos/logo_sagentong_horizontal.png"
-          alt="SaGentong Logo"
-          width={180}
-          height={60}
-          className="h-auto w-auto object-contain"
-          priority
-        />
+        <Link href="/">
+          <Image
+            src="/assets/logos/logo_sagentong_horizontal.png"
+            alt="SaGentong Logo"
+            width={180}
+            height={60}
+            className="h-auto w-auto object-contain"
+            priority
+          />
+        </Link>
       </div>
 
       <nav className="flex-1 space-y-2 px-4">

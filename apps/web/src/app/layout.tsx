@@ -18,6 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sagentong.com"),
   title: "SaGentong - Langkah Cepat, Aksi Tepat!",
   description:
     "Sagentong adalah platform yang memudahkan masyarakat dalam melaporkan kebutuhan bantuan sosial, serta membantu pemerintah dan organisasi sosial untuk merespons dengan cepat dan tepat sasaran.",
