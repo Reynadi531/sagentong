@@ -49,3 +49,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Trigger Webhook
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "event": "build_success",
+            "repository": "${{ github.repository }}",
+            "branch": "${{ github.ref_name }}",
+            "sha": "${{ github.sha }}",
+            "image": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}",
+            "tags": "${{ steps.meta.outputs.tags }}"
+          }'
