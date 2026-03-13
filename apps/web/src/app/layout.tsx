@@ -4,6 +4,7 @@ import { Poppins, Inter } from "next/font/google";
 import "../index.css";
 import Providers from "@/components/providers";
 import { PageTransition } from "@/components/page-transition";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -97,6 +98,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <GoogleTagManager gtmId="G-LCWLM83QBZ" />
       <body className={`${poppins.variable} ${inter.variable} antialiased`}>
         <Providers>
           <div className="grid grid-rows-[auto_1fr] h-svh">
