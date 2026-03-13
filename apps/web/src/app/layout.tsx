@@ -98,7 +98,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <GoogleTagManager gtmId="G-LCWLM83QBZ" />
+      <GoogleTagManager gtmId="GTM-THQZZ9S9" />
       <body className={`${poppins.variable} ${inter.variable} antialiased`}>
         <Providers>
           <div className="grid grid-rows-[auto_1fr] h-svh">
