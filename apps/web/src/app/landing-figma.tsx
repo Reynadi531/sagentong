@@ -77,7 +77,7 @@ export default function LandingFigma({
           {/* Note: In production you would use next/image pointing to public/images/hero_section.svg or similar */}
           <div
             className="absolute inset-0 w-full h-full bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/hero_section.svg')" }}
+            style={{ backgroundImage: "url('/images/hero-image.jpg')" }}
           />
           <div
             className="absolute inset-0 w-full h-full"
@@ -86,6 +86,10 @@ export default function LandingFigma({
                 "linear-gradient(-90deg, rgba(102, 102, 102, 0) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.75) 100%)",
             }}
           />
+          <span className="absolute bottom-3 right-4 text-xs text-white/80 font-medium z-10 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+            Photo by Fal Pasjabar on
+            https://pasjabar.com/2025/03/16/banjir-rendam-jalur-utama-dayeuhkolot-ganggu-aktivitas-warga/
+          </span>
         </div>
 
         {/* Content */}
